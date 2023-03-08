@@ -25,10 +25,13 @@ class TUI:
     
     def print_board(self, game, highlights=[]):
         """
-        This function prints the board to the console
+        This function prints the board to the console.
 
-        Args:
-            game (Game): The game to be printed
+        Input:
+            game: (Game) The game that is being played
+
+            highlights: (list) A list of (row_number, col_number) tuples to
+                         highlight on the board
 
         """
         board = game.board
@@ -78,6 +81,7 @@ class TUI:
         """
         This method will repeatedly ask user to select a user to enter an
         integer until a valid value is given.
+        
         Inputs:
             prompt (str) - a message that explains what the input is for
             range (tuple(int, int)) - an inclusive range of accepted values, as
@@ -118,7 +122,7 @@ class TUI:
             false_ans (list[str]) - a list of inputs by user that would be
                             considered to be equivalent to an answer of False
         Output:
-            (bool) - a value of type integer and in a certain range,
+            (bool) - a value of type boolean and in a certain range,
                     if was provided.
         """
 
@@ -158,12 +162,24 @@ class TUI:
             self.console.print(f"Winner: [on green]{winner.name}[/on green]")
         self.console.print("-"*10)  
 
-    def get_valid_pos(self, valid_poisitions):
+    def get_valid_pos(self, valid_poisitions, prompt="Choose a piece to move"):
+        """
+        This method will repeatedly ask user to select a valid row and column
+        from a list of valid positions. The positions do not get printed in this
+        method.
+
+        Inputs:
+            valid_poisitions (list[tuple(int, int)]) - a list of valid positions a user must chose from.
+
+            prompt (str) - a message that explains what the input is for
+        Output:
+            tuple(int,int)
+        """
         row = -1
         col = -1
 
         while (row,col) not in valid_poisitions:
-            self.console.print("Choose a piece to move")
+            self.console.print(prompt)
 
             row = -1 + self.get_int_input("Select a row: ")
             col = -1 + self.get_int_input("Select a column: ")
@@ -173,6 +189,17 @@ class TUI:
         return (row, col)
 
     def get_player_move(self,player,game):
+        """
+        This method will ask user to select a piece to move.
+
+        Inputs:
+            player (Player) - player that has to choose a piece to move
+
+            game (Game) - the game that the player has to choose a piece to move
+        Output:
+            [GamePiece,list[tuple(int,int)]] - the piece that the user chose to move and the move they selected.
+        """
+
         possible_jumps = game.get_all_jumps(player)
        
         if possible_jumps == []:
@@ -200,7 +227,7 @@ class TUI:
             self.print_board(game, highlights=arriving_positions)
 
             # Force user to chose valid game_piece position
-            valid_final_piece_pos = self.get_valid_pos(arriving_positions)
+            valid_final_piece_pos = self.get_valid_pos(arriving_positions, prompt="Choose where to move the piece to")
             move_selected = []
             for move in possible_piece_moves:
                 if move[1][-1] == valid_final_piece_pos:
@@ -351,7 +378,15 @@ class TUIGame:
 @click.option('--width', default=8)
 @click.option('--rows-with-pieces', default=2)
 def cmd(player_1_type, player_2_type, width, rows_with_pieces):
+    """
+    This is the command line interface for the Checkers TUI.
 
+    Input:
+        player_1_type (str) - type of player 1
+        player_2_type (str) - type of player 2
+        width (int) - width of the board
+        rows_with_pieces (int) - number of rows with pieces
+    """
     if player_1_type == "random-bot":
         player_1 = RandomBot("random-bot-1","#5442f5")
     elif player_1_type == "smart-bot":
