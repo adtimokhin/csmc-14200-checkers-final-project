@@ -30,7 +30,7 @@ from player import Player
 from board import Board
 from game_piece import GamePiece
 from bot import CheckersBot, RandomBot
-
+from game import Game
 
 WIDTH = 600
 HEIGHT = 600
@@ -44,39 +44,15 @@ YELLOW = (245, 245, 44)
 BROWN = (166, 75, 0)
 SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
 
-class GUIPlayer(Player):
-    """
-    Simple class to store information about a GUI player
-    """
-    def __init__(self, n: int, player_type: str, board: Board, color):
-        """ Constructor
-        Args:
-            n: The player's number (1 or 2)
-            player_type: "human", "random-bot", or "checkers-bot"
-            board: The Checkers board
-            color: The player's color
-        """
-        if player_type == "human":
-            self.name = f"Player {n}"
-            self.bot = None
-        if player_type == "random-bot":
-            self.name = f"Random Bot {n}"
-            self.bot = RandomBot(str(n), color)
-        elif player_type == "checkers-bot":
-            self.name = f"Checkers Bot {n}"
-            self.bot = CheckersBot(str(n), color)
-        self.board = board
-        self.color = color
 
-
-def is_players_piece(surface, coordinates, player_pieces_color):
+def is_players_piece(surface, coordinates, player_color):
     '''
     Checks if the selected location stores the piece of a given player
     '''
-    if player_pieces_color == "Red":
+    if player_color == "Red":
         if tuple(pygame.Surface.get_at(surface, coordinates)[:3]) == RED:
             return True
-    if player_pieces_color == "Black":
+    if player_color == "Black":
         if tuple(pygame.Surface.get_at(surface, coordinates)[:3]) == BLACK:
             return True
 
@@ -88,13 +64,13 @@ def get_piece(board, coordinates):
     piece = board.grid[x][y]
     return piece
 
-def get_position(coordinates):
+def get_position(coordinates, game):
     '''
     Converts pixel coordinates into board position (row, column)
     '''
     x, y = coordinates
-    square_width = WIDTH / 8
-    square_height = HEIGHT / 8
+    square_width = WIDTH / game.board.number_of_cols
+    square_height = HEIGHT /game.board.number_of_rows 
     column = x // square_width 
     row = y // square_height
     column = int(column)
@@ -102,7 +78,7 @@ def get_position(coordinates):
     position = (row, column)
     return position
 
-def draw_board(board: Board, surface, game_piece = None) -> None:
+def draw_board(game, surface, game_piece = None) -> None:
     """ 
     Draws the current state of the board in the window
     Args:
@@ -113,10 +89,11 @@ def draw_board(board: Board, surface, game_piece = None) -> None:
     background = WHITE
     surface.fill(background)
 
-    grid = board.grid 
-    nrows = len(grid)
-    ncols = len(grid[0])
-    
+    nrows = len(game.board.grid)
+    ncols = len(game.board.grid[0])
+
+    grid = game.board.grid
+
     
     # Compute the row height and column width
     row_height = HEIGHT // nrows + 1
@@ -145,17 +122,18 @@ def draw_board(board: Board, surface, game_piece = None) -> None:
         pygame.draw.rect(surface, color= YELLOW, rect = rect)
 
         # Highlight all valid moves (prioritize jumps)
-        moves = Board.get_possible_moves_for_piece(board, game_piece)
-        jumps = Board.get_possible_jumps(board, game_piece)
+        moves = game.get_possible_moves_for_piece(game_piece)
+        jumps = game.get_possible_jumps_for_piece(game_piece)
 
-        if jumps is not None: 
+        if jumps != []: 
+            jumps = list(move[1][-1] for move in jumps)
             for jump in jumps:
                     row, col = jump
                     rect = (col * column_width, row * row_height, column_width, row_height)
                     pygame.draw.rect(surface, color= BLUE, rect = rect)
-
-        if jumps is None:
-            if moves is not None:
+        else:
+            if moves != []:
+                moves = list(move[1][-1] for move in moves)
                 for move in moves:
                     row, col = move
                     rect = (col * column_width, row * row_height, column_width, row_height)
@@ -165,9 +143,9 @@ def draw_board(board: Board, surface, game_piece = None) -> None:
     for i, row in enumerate(grid):
         for j, piece in enumerate(row):
             if piece is not None:
-                if piece.player == "Red":
+                if piece.player.color == "Red":
                     color = RED
-                if piece.player == "Black":
+                if piece.player.color == "Black":
                     color = BLACK
                 center = (j * column_width + column_width // 2, i * row_height + row_height // 2)
                 radius = row_height // 2 - 8
@@ -184,97 +162,7 @@ def draw_board(board: Board, surface, game_piece = None) -> None:
                     
     pygame.display.flip()
 
-
-class GUIPiece():
-    """
-    Simple class to 
-    - store information about current player and selected piece to 
-    perform the move, 
-    - perform a valid move (jumps are prioritized)
-    - switch the turn 
-    - update the grid
-    """
-    def __init__(self, board: Board):
-        """ Constructor
-        Args:
-            board: The Checkers board
-        """
-        self.board = board
-        self.grid = board.grid
-        self.selected_piece = None
-        self.current_player = self.board.current_player
-        self.gui_player = None
-
-    def selected_square(self, coordinates):
-        '''
-        Selects a piece to move or jump. When the user chooses the final 
-        position by clicking on the available square, calls move_piece() to 
-        move the selected piece
-        '''        
-        if self.selected_piece is not None:
-            jumps = Board.get_possible_jumps(self.board, self.selected_piece)
-            moves = Board.get_possible_moves_for_piece(self.board, self.selected_piece)
-            if jumps is not None:
-                for jump in jumps:
-                    if coordinates == jump:
-                        self.move_piece(coordinates)
-            elif moves is not None:
-                for move in moves:
-                    if coordinates == move:
-                        self.move_piece(coordinates)
-            self.selected_piece = None
-
-        elif self.selected_piece is None:
-            piece = get_piece(self.board, coordinates)
-            if piece is not None: 
-                jumps = Board.get_all_jumps(self.board, self.current_player)
-                if piece.player == self.current_player:
-                    if jumps is not None:
-                        for jump in jumps:
-                            if piece.position == jump[0].position:
-                                self.selected_piece = piece
-                    elif jumps is None:
-                        self.selected_piece = piece
-
-
-    def move_piece(self, final_pos):
-        '''
-        Moves the piece on the board. Calls change_player() to switch the turn
-        after the move is performed
-        '''
-        initial_pos = self.selected_piece.position
-        Board.perform_move(self.board, initial_pos, final_pos)
-        draw_board(self.board, SCREEN)
-        pygame.display.update()
-        self.selected_piece = None
-        self.change_player()
-
-
-    def change_player(self):
-        '''
-        Switches the turn
-        '''
-        if self.board.current_player == "Black":
-            self.board.current_player = "Red"
-        elif self.board.current_player == "Red": 
-            self.board.current_player = "Black"
-        self.current_player = self.board.current_player
-        return None
-
-
-    def is_end(self):
-        '''
-        Checkes if the game has ended (condition: the current player does not 
-        have any moves to perform, for example, if they have no game pieces left
-        on the board)
-        '''
-        if Board.get_all_jumps(self.board, self.current_player) is None and \
-        Board.get_possible_moves(self.board, self.current_player) is None:
-            return True
-        return False
-    
-
-def play_checkers(board: Board, players):
+def play_checkers(game):
     '''
     Plays a game of Checkers on a Pygame window
     Args:
@@ -285,87 +173,115 @@ def play_checkers(board: Board, players):
     # Initialize Pygame
     pygame.init()
     pygame.display.set_caption("Checkers")
-    draw_board(board, SCREEN)
+    draw_board(game, SCREEN)
 
-    # The starting player is black
-    board.current_player = "Black"
-    gui_piece = GUIPiece(board)
+    # 
+    current_player = game.players[0]
+    next_player = game.players[1]
 
-    while not GUIPiece.is_end(gui_piece): 
+    selected = None
+    # Game loop
+    while not check_player_lost(game, current_player):
         events = pygame.event.get()
+
         for event in events:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            
-            for player in players:
-                if player.color == board.current_player:
-                    current = player
 
-            if current.bot is None:
-                if event.type == pygame.MOUSEMOTION:
-                    if is_players_piece(SCREEN, event.pos, board.current_player): 
-                        board_coor = get_position(event.pos)
-                    
-                        for piece in board.pieces_dictionary[board.current_player]:
-                            if piece.position == board_coor:
-                                selected = piece
-                        
-                        draw_board(board, SCREEN, selected)
-                        pygame.display.update()
+        if event.type == pygame.MOUSEMOTION:
+                if is_players_piece(SCREEN, event.pos, current_player.color): 
+                    board_color = get_position(event.pos, game)
+                    for piece in game.pieces_dict[current_player]:
+                        if piece.position == board_color:
+                            selected = piece
+                            break
 
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    board_coor = get_position(event.pos)
-                    GUIPiece.selected_square(gui_piece, board_coor)
-            
-            if current.bot is not None:
-                move = current.choose_move(board)
-                gui_piece.selected_piece = move[0]
-                move_coor = move[1]
-                GUIPiece.move_piece(gui_piece, move_coor)
+                    draw_board(game, SCREEN, game_piece=selected)
+                    pygame.display.update()
 
-    
-    lost = board.current_player
-    if lost == "Red":
-        winner = "Black"
-    else: 
-        winner = "Red"
-    
-    for player in players:
-        if player.color == winner:
-            winner = player.name
-
-    if winner is not None:
-        print(f"The winner is {winner}!")
-    else:
-        print("It's a tie!")
-
+        if event.type == pygame.MOUSEBUTTONDOWN:
+                    board_coor = get_position(event.pos,game)
+                    if is_piece_moved(game, selected, board_coor):
+                        temp = current_player
+                        current_player = next_player
+                        next_player = temp
+                        draw_board(game, SCREEN)
+   
+    print(f"{next_player} WON!")
     pygame.quit()
+
+def is_piece_moved(game,piece_to_move, selected_final_position):
+    """
+    Checks if the piece is moved or not
+    Input:
+        piece_to_move (GamePiece) - the piece to move
+        selected_final_position (tuple) - the final position of the piece
+    Output:
+        True - if the piece is moved to a valid location
+        False - if the piece is not moved to a valid location
+    """
+    all_possible_moves = game.get_possible_jumps_for_piece(piece_to_move)
+    if all_possible_moves == []:
+        all_possible_moves = game.get_possible_moves_for_piece(piece_to_move)
+    final_positions = list(move[1][-1] for move in all_possible_moves)
+
+    i = -1
+    for index, final_position in enumerate(final_positions):
+        if final_position == selected_final_position:
+            i = index
+            break
+    if i == -1:
+        return False
+    
+    game.make_move(all_possible_moves[i])
+    return True
+
+def check_player_lost(game, current_player: Player) -> bool:
+    """
+    Checks if the player lost the game or not
+    Input:
+        current_player (Player) - a player whose turn it is
+    Output:
+        True - if the player has lost the game
+        False - if the player has not lost the game
+    """
+    valid_moves = game.get_possible_moves(current_player)
+    return valid_moves == []
                     
-@click.command(name="checkers-gui")
+@click.command(name="checkers-tui")
+@click.option('--player-1-type', default="Player One")
+@click.option('--player-2-type', default="Player Two")
+@click.option('--width', default=8)
+@click.option('--rows-with-pieces', default=2)
+def cmd(player_1_type, player_2_type, width, rows_with_pieces):
+    """
+    This is the command line interface for the Checkers TUI.
 
-@click.option('--size', required=True, type=int,
-              default=3)
+    Input:
+        player_1_type (str) - type of player 1
+        player_2_type (str) - type of player 2
+        width (int) - width of the board
+        rows_with_pieces (int) - number of rows with pieces
+    """
+    if player_1_type == "random-bot":
+        player_1 = RandomBot("random-bot-1","Red")
+    elif player_1_type == "smart-bot":
+        player_1 = CheckersBot("smart-bot-1","Red")
+    else:
+        player_1 = Player(player_1_type, "Red")
 
-@click.option('--player1',
-              type=click.Choice(['human', 'random-bot', 'checkers-bot'], case_sensitive=False),
-              default="human")
+    if player_2_type == "random-bot":
+        player_2 = RandomBot("random-bot-2","Black")
+    elif player_2_type == "smart-bot":
+        player_2 = CheckersBot("smart-bot-2","Black")
+    else:
+        player_2 = Player(player_2_type, "Black")
 
-@click.option('--player2',
-              type=click.Choice(['human', 'random-bot', 'checkers-bot'], case_sensitive=False),
-              default="human")
+    players = [player_1, player_2]
+    game = Game(players, rows_with_pieces, width)
 
-
-def cmd(size, player1, player2):
-
-    board = Board(size)
-
-    player1 = GUIPlayer(1, player1, board, "Black")
-    player2 = GUIPlayer(2, player2, board, "Red")
-
-    players = [player1, player2]
-
-    play_checkers(board, players)
+    play_checkers(game)
 
 if __name__ == "__main__":
     cmd()
