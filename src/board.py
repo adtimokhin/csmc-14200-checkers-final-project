@@ -35,6 +35,8 @@ class Board:
             row_to_remove = (initial_pos[0] + final_pos[0]) // 2
             column_to_remove = (initial_pos[1] + final_pos[1]) // 2
             self.remove_piece(self.grid[row_to_remove][column_to_remove])
+        if final_pos[0] == 0 or final_pos[0] == self.number_of_cols -1:
+            self.grid[initial_pos[0]][initial_pos[1]].transform()
 
      def place_piece(self, piece):
         """
