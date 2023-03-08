@@ -202,7 +202,13 @@ class TUI:
             self.console.print(f"[on green]{player.name}[/on green] This is where you can move your piece to:")
             self.print_board(game, highlights=arriving_positions)
 
-
+            # Force user to chose valid game_piece position
+            valid_final_piece_pos = self.get_valid_pos(arriving_positions)
+            move_selected = []
+            for move in possible_piece_moves:
+                if move[1][-1] == valid_final_piece_pos:
+                    move_selected = move
+            return move_selected
 
 
 
@@ -245,8 +251,6 @@ class TUIGame:
         # Flag that checks if the players should have a offer_draw option
         should_offer_draw = not(is_bot(current_player) or is_bot(next_player))
 
-        # Printing board
-        self.tui.print_board(self.game)
 
         # Game loop
         while not (self.check_player_lost(current_player) or is_draw):
@@ -259,10 +263,14 @@ class TUIGame:
                     continue   
                 # When the game is over, a description of how the game ended should 
              
+            # Printing board
+            self.tui.print_board(self.game)
 
             # Asking for players move.
+            move = self.tui.get_player_move(current_player, self.game)
 
-            self.tui.get_player_move(current_player, self.game)
+            # Performing the move
+            self.game.make_move(move)
 
             # Updating some pointers
             turn += 1
