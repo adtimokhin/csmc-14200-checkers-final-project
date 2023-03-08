@@ -31,6 +31,10 @@ class Board:
         
         self.grid[final_pos[0]][final_pos[1]] = self.grid[initial_pos[0]][initial_pos[1]]
         self.grid[initial_pos[0]][initial_pos[1]] = None
+        if abs(initial_pos[0] - final_pos[0]) == 2:
+            row_to_remove = (initial_pos[0] + final_pos[0]) // 2
+            column_to_remove = (initial_pos[1] + final_pos[1]) // 2
+            self.remove_piece(self.grid[row_to_remove][column_to_remove])
 
      def place_piece(self, piece):
         """

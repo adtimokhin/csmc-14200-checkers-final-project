@@ -86,7 +86,7 @@ class Game:
 
 
 
-    def make_move(self, initial_pos: tuple, final_pos: tuple):
+    def make_move(self, move):
         """
         Moves a Game_Piece from initial position to final position on the grid
         removes a Piece from the board if the 'jump-move' was performed
@@ -97,4 +97,9 @@ class Game:
         :returns
             None
         """
-        pass
+        piece = move[0]
+        list_of_movements = move[1]
+        for transposition in list_of_movements:
+            self.board.move_piece(piece.position, transposition)
+
+
