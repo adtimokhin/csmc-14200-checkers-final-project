@@ -116,7 +116,10 @@ class Game:
             list[(piece, [(int, int)])] - list of tuples that show a piece and a possible move coordinate
             if jumps are possible returns only jump-moves
         """
-        raise NotImplementedError
+       list_to_return = []
+        for piece in self.pieces_dict[player]:
+            list_to_return += self.get_possible_moves_for_piece(piece)
+        return list_to_return
 
     def get_all_jumps(self, player):
         """
