@@ -71,8 +71,6 @@ class Game:
             None
         """
         pass
-    
-    
 
 class Board:
     """
