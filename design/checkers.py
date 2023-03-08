@@ -515,12 +515,14 @@ def play_checkers(game):
     '''
     raise NotImplementedError
 
-def is_piece_moved(game,piece_to_move, selected_final_position):
+def is_piece_moved(game,piece_to_move, selected_final_position, should_be_jump):
     """
     Checks if the piece is moved or not
     Input:
         piece_to_move (GamePiece) - the piece to move
         selected_final_position (tuple) - the final position of the piece
+        should_be_jump (bool) - if the move should be a jump (because the player
+                                 has to jump if possible)
     Output:
         True - if the piece is moved to a valid location
         False - if the piece is not moved to a valid location
