@@ -2,9 +2,20 @@ from board import Board
 from game_piece import GamePiece
 class Game:
     """
+    This class represents a collection of functionality
+    responsible for the game logic. This class also stores board.
+
     Public attributes of this class:
-        board: Board
-        players: list[Player]
+    - players: list of players playing the game.
+
+    - number_populated_rows: number of rows in the board that have been
+                        populated with game pieces of a single player.
+    
+    - width: width of the board
+
+    - board: Board object created from the input data.
+    
+    - pieces_dict: dictionary of game pieces.
     """
 
     def __init__(self, players, number_populated_rows, width=8):
@@ -71,8 +82,19 @@ class Game:
             moves_formatted.append([piece, move])
         return moves_formatted
 
-            
     def get_all_jumps_moves (self, start_pos, piece, blocked_pos=[]):
+        """
+        finds all possible jumps for a given piece
+        :param start_pos
+            the starting position of the piece
+        :param piece
+            the specific game piece for which the jumps are found
+        :param blocked_pos
+            a list of coordinates which the piece cannot jump over.
+        :returns
+            either list[(int,int)] which is a list of tuples of coordinates, representing jumps,
+            or None
+        """
         player = piece.player
         direction = -1 if (self.players.index(player) % 2 == 0) else 1
         if piece.is_king:
@@ -147,7 +169,6 @@ class Game:
         return list_to_return
     
     def __populate_board(self):
-
         """
         Populates the board with Game_Pieces accroding to the rules of checkers.
         """
@@ -166,8 +187,6 @@ class Game:
                 self.board.place_piece(second_piece)
 
                 self.pieces_dict[self.players[1]].append(second_piece)
-
-
 
     def make_move(self, move):
         """

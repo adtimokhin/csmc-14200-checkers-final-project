@@ -1,8 +1,9 @@
 from random import randint
-from src.player import Player
-from src.board import Board
-from src.game import Game
-from src.game_piece import GamePiece
+from player import Player
+from board import Board
+from game import Game
+from game_piece import GamePiece
+
 from math import inf
 # https://hobbylark.com/board-games/Checkers-Strategy-Tactics-How-To-Win - strategy source
 
@@ -216,7 +217,7 @@ class RandomBot(Player):
         :param board: Board class instance: current game_board
         :return: tuple(GamePiece, tuple(int, int)): a tuple in a move format specified in the design
         """
-        return possible_moves[randint(0, len(possible_moves)-1)]
+        return possible_moves[randint(0, len(possible_moves) - 1)]
 
 def main():
         player_1 = CheckersBot("Player 1", "white")

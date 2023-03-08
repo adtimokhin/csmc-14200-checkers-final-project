@@ -20,19 +20,18 @@ class TUI:
     (Text-Based User Interface).
     Both input and output functions are located here
     """
-
-    REGULAR_GAME_PIECE_SYMBOL = "O"
-    KING_GAME_PIECE_SYMBOL ="K"
-
     def __init__(self):
         self.console = Console()
     
     def print_board(self, game, highlights=[]):
         """
-        This function prints the board to the console
+        This function prints the board to the console.
 
-        Args:
-            game (Game): The game to be printed
+        Input:
+            game: (Game) The game that is being played
+
+            highlights: (list) A list of (row_number, col_number) tuples to
+                         highlight on the board
 
         """
         board = game.board
@@ -82,6 +81,7 @@ class TUI:
         """
         This method will repeatedly ask user to select a user to enter an
         integer until a valid value is given.
+        
         Inputs:
             prompt (str) - a message that explains what the input is for
             range (tuple(int, int)) - an inclusive range of accepted values, as
@@ -122,7 +122,7 @@ class TUI:
             false_ans (list[str]) - a list of inputs by user that would be
                             considered to be equivalent to an answer of False
         Output:
-            (bool) - a value of type integer and in a certain range,
+            (bool) - a value of type boolean and in a certain range,
                     if was provided.
         """
 
@@ -162,12 +162,24 @@ class TUI:
             self.console.print(f"Winner: [on green]{winner.name}[/on green]")
         self.console.print("-"*10)  
 
-    def get_valid_pos(self, valid_poisitions):
+    def get_valid_pos(self, valid_poisitions, prompt="Choose a piece to move"):
+        """
+        This method will repeatedly ask user to select a valid row and column
+        from a list of valid positions. The positions do not get printed in this
+        method.
+
+        Inputs:
+            valid_poisitions (list[tuple(int, int)]) - a list of valid positions a user must chose from.
+
+            prompt (str) - a message that explains what the input is for
+        Output:
+            tuple(int,int)
+        """
         row = -1
         col = -1
 
         while (row,col) not in valid_poisitions:
-            self.console.print("Choose a piece to move")
+            self.console.print(prompt)
 
             row = -1 + self.get_int_input("Select a row: ")
             col = -1 + self.get_int_input("Select a column: ")
@@ -177,6 +189,17 @@ class TUI:
         return (row, col)
 
     def get_player_move(self,player,game):
+        """
+        This method will ask user to select a piece to move.
+
+        Inputs:
+            player (Player) - player that has to choose a piece to move
+
+            game (Game) - the game that the player has to choose a piece to move
+        Output:
+            [GamePiece,list[tuple(int,int)]] - the piece that the user chose to move and the move they selected.
+        """
+
         possible_jumps = game.get_all_jumps(player)
        
         if possible_jumps == []:
@@ -204,7 +227,7 @@ class TUI:
             self.print_board(game, highlights=arriving_positions)
 
             # Force user to chose valid game_piece position
-            valid_final_piece_pos = self.get_valid_pos(arriving_positions)
+            valid_final_piece_pos = self.get_valid_pos(arriving_positions, prompt="Choose where to move the piece to")
             move_selected = []
             for move in possible_piece_moves:
                 if move[1][-1] == valid_final_piece_pos:
@@ -243,9 +266,7 @@ class TUI:
             jump_index = -1 + self.get_int_input("Select a jump number that you will make: " , (1,len(moves_paths)))
             return possible_piece_moves[jump_index]
 
-
-
-         
+  
 def is_bot(player) -> bool:
     """
     This method checks if the user passed in parameters is a Bot.
@@ -260,15 +281,20 @@ def is_bot(player) -> bool:
     return type(player) is RandomBot or type(player) is CheckersBot
    
 
-
 class TUIGame:
-    
+    """
+    This is a class that allows to play a game through TUI.
+
+    Public Attributes:
+        - game (Game) - the game that the player has to play.
+        - tui (TUI) - a class that allows to interact with the user interface.
+    """
+
     def __init__(self, game):
         self.game = game
         self.tui = TUI()
 
-
-    def play_game(self) -> None:
+    def play_game(self):
         """
         This function is called to play the game,
         using the board set as a class parameters
@@ -300,7 +326,10 @@ class TUIGame:
                 # When the game is over, a description of how the game ended should 
              
             # Asking for players move.
-            move = self.tui.get_player_move(current_player, self.game)
+            if is_bot(current_player):
+                move = current_player.choose_move(self.game.board, self.game.get_possible_moves(current_player))
+            else:
+                move = self.tui.get_player_move(current_player, self.game)
 
             # Performing the move
             self.game.make_move(move)
@@ -314,7 +343,6 @@ class TUIGame:
         # be provided
         winner = None if is_draw else self.game.players[(turn + 1) % player_count]
         self.tui.print_winner_screen(winner)         
-
 
     def check_player_lost(self, current_player):
         """
@@ -351,14 +379,40 @@ class TUIGame:
 
         return False
 
-# @click.command(name="checkers-tui")
-def cmd():
-    player_1 = Player("Player 1", "#5442f5")
-    player_2 = Player("Player 2", "#42f2f5")
-    players = [player_1, player_2]
+@click.command(name="checkers-tui")
+@click.option('--player-1-type', default="Player One")
+@click.option('--player-2-type', default="Player Two")
+@click.option('--width', default=8)
+@click.option('--rows-with-pieces', default=2)
+def cmd(player_1_type, player_2_type, width, rows_with_pieces):
+    """
+    This is the command line interface for the Checkers TUI.
 
-    game = Game(players, 2,6)
+    Input:
+        player_1_type (str) - type of player 1
+        player_2_type (str) - type of player 2
+        width (int) - width of the board
+        rows_with_pieces (int) - number of rows with pieces
+    """
+    if player_1_type == "random-bot":
+        player_1 = RandomBot("random-bot-1","#5442f5")
+    elif player_1_type == "smart-bot":
+        player_1 = CheckersBot("smart-bot-1","#5442f5")
+    else:
+        player_1 = Player(player_1_type, "#5442f5")
+
+    if player_2_type == "random-bot":
+        player_2 = RandomBot("random-bot-2","#42f2f5")
+    elif player_2_type == "smart-bot":
+        player_2 = CheckersBot("smart-bot-2","#42f2f5")
+    else:
+        player_2 = Player(player_2_type, "#42f2f5")
+    
+    players = [player_1, player_2]
+    game = Game(players, rows_with_pieces, width)
+
     tui_game = TUIGame(game)
+
     tui_game.play_game()
 
 
