@@ -178,6 +178,7 @@ class TUI:
 
     def get_player_move(self,player,game):
         possible_jumps = game.get_all_jumps(player)
+       
         if possible_jumps == []:
             possible_moves = game.get_possible_moves(player)
             pieces_that_can_be_moved = []
@@ -209,6 +210,38 @@ class TUI:
                 if move[1][-1] == valid_final_piece_pos:
                     move_selected = move
             return move_selected
+        else:
+            pieces_that_can_be_moved = []
+            for move in possible_jumps:
+                pieces_that_can_be_moved.append(move[0])
+            pieces_that_can_be_moved = list(set(pieces_that_can_be_moved)) # Remove duplicates
+
+            pieces_that_can_be_moved_pos = list(piece.position for piece in pieces_that_can_be_moved)
+            # Print the board with pieces that can be moved
+            self.console.print(f"[on green]{player.name}[/on green] can move this pieces:")
+            self.print_board(game, highlights=pieces_that_can_be_moved_pos)
+            # Force user to chose valid game_piece position
+            valid_piece_pos = self.get_valid_pos(pieces_that_can_be_moved_pos)
+            piece_to_move = game.board.grid[valid_piece_pos[0]][valid_piece_pos[1]]
+            # Print possible moves for that piece
+            possible_piece_moves = game.get_possible_jumps_for_piece(piece_to_move)
+            moves_paths = list(move[1] for move in possible_piece_moves)
+
+            self.console.print(f"There are {len(possible_piece_moves)} possible jumps for this piece:")
+            for index, path in enumerate(moves_paths):
+                self.console.print(f"{index + 1}: {path}")
+            
+            # Showing a move path if player wants to see it
+            while self.get_bool_input("Do you want to see a path of a certain jump?"):
+                jump_index = -1 + self.get_int_input("Select a jump number: " , (1,len(moves_paths)))
+                self.print_board(game, highlights=moves_paths[jump_index])
+            
+            # Force user to chose valid game_piece position
+            self.console.print(f"There are {len(possible_piece_moves)} possible jumps for this piece:")
+            for index, path in enumerate(moves_paths):
+                self.console.print(f"{index + 1}: {path}")
+            jump_index = -1 + self.get_int_input("Select a jump number that you will make: " , (1,len(moves_paths)))
+            return possible_piece_moves[jump_index]
 
 
 
@@ -254,6 +287,9 @@ class TUIGame:
 
         # Game loop
         while not (self.check_player_lost(current_player) or is_draw):
+             # Printing board
+            self.tui.print_board(self.game)
+            
             # A turns starts with asking if users want to declare a draw
             if should_offer_draw:
                 is_draw = self.is_draw(current_player,
@@ -263,9 +299,6 @@ class TUIGame:
                     continue   
                 # When the game is over, a description of how the game ended should 
              
-            # Printing board
-            self.tui.print_board(self.game)
-
             # Asking for players move.
             move = self.tui.get_player_move(current_player, self.game)
 

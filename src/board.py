@@ -1,4 +1,4 @@
-from src.game_piece import GamePiece
+from game_piece import GamePiece
 
 
 class Board:
