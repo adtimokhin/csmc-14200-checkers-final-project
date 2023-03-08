@@ -139,6 +139,12 @@ in the board class, meaning our board is not general, it is checkers-specific, a
 
 ## BOT
 
+*Updated metrics and algorythms to choose the optimal move due to changes in design
+*Spesifically changed the implementation of best_jump_method
+*Fixed a bug, connected to avoiding danger, which didn't account for current position becoming empty after the move
+*Added a small simulation in a main function in a file, which you can run by running bot.py file and get a win-ratio for the bot
+*Added unit tests in a seperate file to check basic functionality of a bot
+*tests are in test_for_bot, and can be run with pytest
 
 # How we addressed feedback from TA
 
