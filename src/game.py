@@ -1,4 +1,5 @@
 from src.board import Board
+from game_piece import GamePiece
 class Game:
     """
     Public attributes of this class:
@@ -15,7 +16,10 @@ class Game:
 
         # Setting up the pieces_dict
         for player in self.players:
-            self.pieces_dict[piece] = []
+            self.pieces_dict[player] = []
+
+        # Setting the board with pieces
+        self.__populate_board()
 
     def get_possible_jumps(self, piece):
         """
@@ -62,8 +66,24 @@ class Game:
         raise NotImplementedError
     
     def __populate_board(self):
+
+        """
+        Populates the board with Game_Pieces accroding to the rules of checkers.
+        """
         for row_num in range(self.number_populated_rows):
-            current_row = self.board[row_num]
+            start_pos = 1 if row_num % 2 == 0 else 0
+            for col_num in range(start_pos,self.width, 2):
+                # Placing game pieces to the grid of the board
+                first_piece = GamePiece((row_num, col_num), self.players[0])
+                self.board.place_piece(first_piece)
+
+                second_piece = GamePiece(( len(self.board.grid) - row_num - 1, col_num), self.players[1])
+                self.board.place_piece(second_piece)
+
+                # Putting the pieces in the pieces_dict:
+                self.pieces_dict[self.players[0]].append(first_piece)
+                self.pieces_dict[self.players[1]].append(second_piece)
+
 
 
     def make_move(self, initial_pos: tuple, final_pos: tuple):
