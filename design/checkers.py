@@ -231,93 +231,90 @@ class CheckersBot(Player):
     """
     CheckersBot is a child class of Player which with the simple heuristics suggests a move
     Public attributes:
-    name: str  - name of the player, continuation of player interface
+        name: str  - name of the player, continuation of player interface
     Heuristics:
-        1. Try to king with every possible opportunity
-        2. Try to move so that the piece is not attacked
-        3. Chose the longest jumps
-        4. Move aggressively (closer to the enemy pieces but not such that they are attacked
-        5. Don't move two back(flank) pieces if possible
-        """
-
+    1. Try to king with every possible opportunity
+    2. Try to move so that the piece is not attacked
+    3. Chose the longest jumps
+    4. Move aggressively (closer to the enemy pieces but not such that they are attacked
+    5. Don't move two back(flank) pieces if possible
+    """
     def __init__(self, name: str, color: str):
-        """same __init__ as a player"""
         raise NotImplementedError
 
-    def choose_move(self, board: Board):
+    def choose_move(self, board: Board, possible_moves: list):
         """
         chooses the best possible move
-        :param board: Board class instance: current game_board
-        :return: tuple(GamePiece, tuple(int, int)):  a move in a move format specified in the design
+        :param: board Board class instance: current game_board
+        :param: possible_moves list of moves
+        :return: tuple(GamePiece, [tuple(int, int)]):  a move in a move format specified in the design
         """
+
         raise NotImplementedError
 
     def aggressive_moves(self, valid_moves: list, board: Board):
         """
         picks the most aggressive move, by choosing the move which minimizes distance to all of the enemy pieces
-        :param valid_moves:
-        :param board: Board class instance: current game_board
+        :param: valid_moves: all of the moves that are accessible to the given bot
+        :param: board: Board class instance: current game_board
         :return: list(moves): list of moves which are the best by given metric
         """
+
         raise NotImplementedError
 
-    def check_if_back_pieces(self, valid_moves: list, board_size: int):
+    def check_if_back_pieces(self, valid_moves: list, row_num: int):
         """
         removes defensive pieces from the valid moves
-        :param valid_moves: list of valid moves
-        :param board_size: int: length of the side of the board
+        :param: valid_moves: list of valid moves
+        :param: row_num: int: length of the vertical side of the board
         :return: list[moves]: list of all moves that do not involve back pieces
         """
-
         raise NotImplementedError
 
     def check_if_danger(self, valid_moves: list, board: Board):
         """
         returns all the moves that do not put the piece in danger of being captured
-        :param valid_moves: list of valid moves
-        :param board: Board: game board which is currently played
+        :param: valid_moves: list of valid moves available for the bot
+        :param: board Board: game board which is currently played
         :return: list of all moves that are not loosing a piece
         """
-
         raise NotImplementedError
 
     def best_jump(self, valid_moves: list):
         """
         Out of all jump moves chooses the farthest jump-move (the one which takes the most pieces)
-        :param valid_moves: list of valid moves
+        :param valid_moves: list of valid moves available for the bot
         :return: list of all jumps that capture maximum amount of pieces
         """
-
         raise NotImplementedError
 
-    def check_if_can_king(self, valid_moves: list, board_size: int):
+    def check_if_can_king(self, valid_moves: list, number_of_rows: int):
         """
         Checks if we can turn a piece into a king with one of the moves
-        :param valid_moves: list of valid moves
-        :param board_size: int: length of the side of the board
+        :param: valid_moves list of valid moves
+        :param: number_of_rows int: length of the vertical side of the board
         :return: list of all moves that turn a piece into a king
         """
-
         raise NotImplementedError
 
+
 class RandomBot(Player):
-        """
-        A bot that is able to make random moves, made for the tests
-        Public attributes:
-            name: str: name that is also a parameter of a parent class
-        """
+    """
+    A bot that is able to make random moves, made for the tests
+    Public attributes:
+        name: str: name that is also a parameter of a parent class
+        color: color of the pieces of a given bot
+    """
+    def __init__(self, name: str, color: str):
+        raise NotImplementedError
 
-        def __init__(self, name: str, color: str):
-            """same __init__ as a player"""
-            raise NotImplementedError
-
-        def choose_move(self, board):
-            """
-            Randomly chooses a move
-            :param board: Board class instance: current game_board
-            :return: tuple(GamePiece, tuple(int, int)): a tuple in a move format specified in the design
-            """
-            raise NotImplementedError
+    def choose_move(self, board, possible_moves):
+        """
+        Randomly chooses a move
+        :param board: Board class instance: current game_board
+        :return: tuple(GamePiece, tuple(int, int)): a tuple in a move format specified in the design
+        """
+        raise NotImplementedError
 
 # TUI
 class TUI:
