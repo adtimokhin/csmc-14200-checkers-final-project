@@ -1,3 +1,6 @@
+from src.game_piece import GamePiece
+
+
 class Board:
      def __init__(self, number_of_rows, number_of_cols):
         self.number_of_rows = number_of_rows
@@ -10,7 +13,7 @@ class Board:
                 line.append(None)
             self.grid.append(line)
 
-     def move_piece(self, initial_pos: tuple, final_pos: tuple):
+     def move_piece(self, initial_pos: tuple, final_pos: tuple, game):
         """
         Moves a piece from initial position to final position
         
@@ -36,9 +39,9 @@ class Board:
         if abs(initial_pos[0] - final_pos[0]) == 2:
             row_to_remove = (initial_pos[0] + final_pos[0]) // 2
             column_to_remove = (initial_pos[1] + final_pos[1]) // 2
-            self.remove_piece(self.grid[row_to_remove][column_to_remove])
+            self.remove_piece(self.grid[row_to_remove][column_to_remove], game)
         if final_pos[0] == 0 or final_pos[0] == self.number_of_cols -1:
-            self.grid[initial_pos[0]][initial_pos[1]].transform()
+            self.grid[final_pos[0]][final_pos[1]].transform()
 
      def place_piece(self, piece):
         """
@@ -101,7 +104,7 @@ class Board:
         # Checking if the cell is occupied or not
         return self.grid[row_pos][col_pos] is None
 
-     def remove_piece(self, piece):
+     def remove_piece(self, piece, game):
         """
         Removes a piece from the board
         
@@ -111,8 +114,9 @@ class Board:
 
         :raises: Exception if the piece cannot be removed
         """
-
+        game.pieces_dict[piece.player].remove(piece)
         if self.grid[piece.position[0]][piece.position[1]] is None:
             raise Exception("There is no piece at that position")
-        
+
+
         self.grid[piece.position[0]][piece.position[1]] = None
