@@ -93,16 +93,12 @@ in the board class, meaning our board is not general, it is checkers-specific, a
 * designed a bot which actually is capable to play a game of checkers more or less properly 
 * researched a few heuristics on how to play checkers 
 
-
 ## TUI
 * Added a class responsible for I/O interactions through text-based interface.
 * Added methods for getting boolean and integer inputs from users.
 
 ## TUIGame
 * Added a class to perform game logic stuff (that were previously part of Game class)
-
-## GUIPlayer
-* Added a class to represent a player in GUI
 
 ## GUI
 * Added methods that will provide all necessary interaction between user and the game logic via GUI
@@ -133,14 +129,19 @@ in the board class, meaning our board is not general, it is checkers-specific, a
 
 ## GUI
 
-### GAME LOGIC
-
 * Made implementation more in line with the design (mostly done by updating the design, however).
 * Made changes to the is_jump method in Class Board to make it more comprehensive
 * Initialized placing pieces on the board as part of the constructor in Class Board
 * Removed is_valid_position method
 * Updated get_possible_jumps method
 * Updated get_possible_moves_for_piece method
+* Removed the class for encapsulating the functions since it was unnecessary
 
 ## BOT
-   
+
+
+# How we addressed feedback from TA
+
+Most of the changes that we made were described above. One that we did not outline properly was that we made a move to be of this weired structure that is outlined below. We did it, as TA has recomended, to be able to track the whole path the piece makes when is moved.
+
+`list[GamePiece, list[tuple(int,int)]]`
