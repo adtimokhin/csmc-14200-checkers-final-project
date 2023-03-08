@@ -41,8 +41,8 @@ class Game:
             possible_move.append((piece, [(current_position[0] + direction, current_position[1] - 1)]))
         if piece.is_king:
             if self.board.is_empty_cell((current_position[0] - direction, current_position[1] + 1)):
-                possible_move.append((piece, [(current_position[0] + direction, current_position[1] + 1)]))
-            if self.board.is_empty_cell((current_position[0] + direction, current_position[1] - 1)):
+                possible_move.append((piece, [(current_position[0] - direction, current_position[1] + 1)]))
+            if self.board.is_empty_cell((current_position[0] - direction, current_position[1] - 1)):
                 possible_move.append((piece, [(current_position[0] - direction, current_position[1] - 1)]))
         return possible_move
 
