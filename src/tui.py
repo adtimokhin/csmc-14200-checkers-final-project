@@ -282,7 +282,14 @@ def is_bot(player) -> bool:
    
 
 class TUIGame:
-    
+    """
+    This is a class that allows to play a game through TUI.
+
+    Public Attributes:
+        - game (Game) - the game that the player has to play.
+        - tui (TUI) - a class that allows to interact with the user interface.
+    """
+
     def __init__(self, game):
         self.game = game
         self.tui = TUI()

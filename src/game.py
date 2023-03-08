@@ -2,9 +2,20 @@ from board import Board
 from game_piece import GamePiece
 class Game:
     """
+    This class represents a collection of functionality
+    responsible for the game logic. This class also stores board.
+
     Public attributes of this class:
-        board: Board
-        players: list[Player]
+    - players: list of players playing the game.
+
+    - number_populated_rows: number of rows in the board that have been
+                        populated with game pieces of a single player.
+    
+    - width: width of the board
+
+    - board: Board object created from the input data.
+    
+    - pieces_dict: dictionary of game pieces.
     """
 
     def __init__(self, players, number_populated_rows, width=8):

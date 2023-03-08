@@ -7,43 +7,68 @@ This is where we put all of our documentation
 
 class Game:
     """
+    This class represents a collection of functionality
+    responsible for the game logic. This class also stores board.
+
     Public attributes of this class:
-        board: Board
-        players: list[Player]
+    - players: list of players playing the game.
+
+    - number_populated_rows: number of rows in the board that have been
+                        populated with game pieces of a single player.
+    
+    - width: width of the board
+
+    - board: Board object created from the input data.
+    
+    - pieces_dict: dictionary of game pieces.
     """
 
-    def __init__(self):
-        pass
+    def __init__(self, players, number_populated_rows, width=8):
+        raise NotImplementedError
 
-    def get_possible_jumps(self, piece):
-        """
-        finds all the possible jumps of a given piece on the board
-        :param piece
-            piece for which we need to find jumps
-        :returns
-            list[(int, int)] - a list of tuples which represent the coordinates of jumps, or None
-        """
-        raise NotImplementedError
-        
-    def get_possible_moves(self, player):
-        """
-        finds possible moves for a given player
-        :param player
-            Player for whom possible moves are found
-        :returns
-            list[(piece, (int, int))] - list of tuples that show a piece and a possible move coordinate
-            if jumps are possible returns only jump-moves
-        """
-        raise NotImplementedError
-        
     def get_possible_moves_for_piece(self, piece):
         """
         finds possible moves for a given piece
         :param piece
             the specific game piece for which the moves are found
         :returns
-            either list[(int,int)] which is a list of tuples of coordinates, representing moves, 
+            either list[(int,int)] which is a list of tuples of coordinates, representing moves,
             or None
+        """
+        raise NotImplementedError
+
+    def get_possible_jumps_for_piece(self, piece):
+        """
+        finds possible jumps for a given piece and formats them accordingly with the design 
+        :param piece
+            the specific game piece for which the jumps are found
+        :returns
+            list[GamePiece, list[tuple(int,int)]] which is a list of tuples of coordinates, representing jumps,
+        """
+        raise NotImplementedError
+
+    def get_all_jumps_moves (self, start_pos, piece, blocked_pos=[]):
+        """
+        finds all possible jumps for a given piece
+        :param start_pos
+            the starting position of the piece
+        :param piece
+            the specific game piece for which the jumps are found
+        :param blocked_pos
+            a list of coordinates which the piece cannot jump over.
+        :returns
+            list[tuple(int,int), list[(),...]] which is a list of tuples of coordinates, representing jumps,
+        """
+        raise NotImplementedError
+
+    def get_possible_moves(self, player):
+        """
+        finds possible moves for a given player
+        :param player
+            Player for whom possible moves are found
+        :returns
+            list[(piece, [(int, int)])] - list of tuples that show a piece and a possible move coordinate
+            if jumps are possible returns only jump-moves
         """
         raise NotImplementedError
 
@@ -59,7 +84,13 @@ class Game:
         """
         raise NotImplementedError
     
-    def make_move(self, initial_pos: tuple, final_pos: tuple):
+    def __populate_board(self):
+        """
+        Populates the board with Game_Pieces accroding to the rules of checkers.
+        """
+        raise NotImplementedError
+
+    def make_move(self, move):
         """
         Moves a Game_Piece from initial position to final position on the grid
         removes a Piece from the board if the 'jump-move' was performed
@@ -70,82 +101,103 @@ class Game:
         :returns
             None
         """
-        pass
+        raise NotImplementedError
 
 class Board:
     """
-     Public attributes of this class:
-        grid: list[list[Piece]]
-        n: int
-        pieces_dictionary: dict{player: [Game_piece]}
-        players: list of players that play on the boatd list[Player]
-    This class is representing a squared board.
-    This is a container class for game pieces.
-    Grid is a 2d array which logically represents the board.
-    Game_piece class instances are stored both in the grid and 
-    in the pieces_dictionary.
-    size is the length of the side of the board.
+    A class that represents the board of the game.
+
+    Attributes:
+    - number_of_rows : The number of rows of the board.
+    - number_of_cols : The number of columns of the board.
+    - grid : The grid of the board. It stores the game pieces.
     """
-    def __init__(self, number_of_rows, number_of_cols):
+     def __init__(self, number_of_rows, number_of_cols):
         raise NotImplementedError
 
-    def move_piece(self, initial_pos: tuple, final_pos: tuple):
+     def move_piece(self, initial_pos: tuple, final_pos: tuple, game):
         """
-        Moves a Game_Piece from initial position to final position on the grid
-        removes a Piece from the board if the 'jump-move' was performed
-        :param initial_pos:
-            (int, int) - represents the coordinates of the piece as (row, col)
-        :param final_pos:
-            (int, int) - represents the coordinates of the piece as (row, col)
-        :returns
-            None
+        Moves a piece from initial position to final position
+
+        Input:
+            initial_pos: tuple(int,int) - initial position of the piece (row, col)
+
+            final_pos: tuple(int,int) - final position of the piece (row, col)
+
+            game: Game - the game object
+        
+        :raises: Exception if the piece cannot be moved
         """
-        pass
-    
-    def place_piece(self, piece):
+
+        raise NotImplementedError
+
+     def place_piece(self, piece):
         """
-        Adds an instance of Game Piece to the grid as well as the pieces dictionary
-        :param piece
-            GamePiece instance that needs to be added
-        :returns
-            None
+        Places a piece on the board.
+
+        Input:
+            piece: (GamePiece) - the piece to be placed on the board
+        
+        :raises: Exception if the piece cannot be placed
+        """
+
+        raise NotImplementedError
+
+     def is_on_grid(self, position):
+        """
+        Checks if the coordinates given are correspondive to an unoccupied cell on the grid
+        If the coordinates are out of bound, then False is returned.
+
+        Input:
+            pos - (int, int) is a position coordinates of the cell. Given as (row, col)
+        
+        Output:
+            True - if the cell is in range of board
+            False - otherwise
         """
         raise NotImplementedError
 
-    def remove_piece(self, piece: GamePiece):
+     def is_empty_cell(self, pos):
         """
-        removes given GamePiece instance from the grid and pieces dictionary
-        :param piece:
-            GamePiece instance that is needed to be removed
-        :returns
-            None
+        Checks if the coordinates given are correspondive to an unoccupied cell on the grid
+        If the coordinates are out of bound, then False is returned.
+
+        Input:
+            pos - (int, int) is a position coordinates of the cell. Given as (row, col)
+        
+        Output:
+            True - if the cell is in range of board and also is not occupied
+            False - otherwise
+        """
+
+        raise NotImplementedError
+
+     def remove_piece(self, piece, game):
+        """
+        Removes a piece from the board.
+
+        Input:
+            piece: (GamePiece) - the piece to be removed from the board
+
+            game: Game - the game object, so that the piece can be removed from the piece_dict
+        
+        :raises: Exception if the piece cannot be removed
         """
         raise NotImplementedError
 
 class GamePiece: 
     """
     Public attributes of this class:
-        position: tuple(row, column)
-        player  : str
-        is_king : bool
+        - position: tuple(row, column) that represents the position of the game piece.
+        - player  : Owner of the piece
+        - is_king : whether the piece is a king or not.
     This class is representing a game piece (checker) with its position, 
     player it belongs to and whether the game piece is a king.
     """
-    def __init__(self, position, player): 
-        """
-        Constructor
-        :param position:
-            the position of the game piece on the board 
-        :param player: 
-            the player who owns the piece
-        :param is_king: 
-            the type of the game piece (whether the checker is a king or not)
-        :returns
-            None
-        """
+    def __init__(self, position, player):
         raise NotImplementedError
 
-    def tranform(self):
+    def transform(self):
         """
         Transforms a game piece into a king 
         :param None
@@ -159,8 +211,10 @@ class Player:
 
     """
     This is a class representing a player of the game.
+    
     Public attributes:
-        name (str) - name of the player
+        - name (str) - name of the player
+        - color (str) - color of the player's pieces
     """
     
     def __init__(self, name: str, color: str):
@@ -173,16 +227,6 @@ class Player:
         """
         raise NotImplementedError
     
-        """
-        Requires Plyer to chose whether they want to accept
-        draw from another Player.
-
-        :returns
-            True if the Players wants to accept draw
-            False otherwise
-        """
-        raise NotImplementedError
-
 class CheckersBot(Player):
     """
     CheckersBot is a child class of Player which with the simple heuristics suggests a move
@@ -275,28 +319,33 @@ class RandomBot(Player):
             """
             raise NotImplementedError
 
-
 # TUI
 class TUI:
     """
     This class is used to call methods for interacting with user via a console 
     (Text-Based User Interface).
     Both input and output functions are located here
+
+    Public attributes:
+        - console: Console used to print messages to the terminal
     """
-
-    def print_board(self, board: Board, highlights=[]) -> None:
+    def __init__(self):
+        raise NotImplementedError
+    
+    def print_board(self, game, highlights=[]):
         """
-        This method prints board to the console
-        Input
-            board (Board) - Board to print.
+        This function prints the board to the console.
 
-            highlights (list[(int,int)]) - a list of tuples that can be 
-                            populated with cells that will be highlighted.
+        Input:
+            game: (Game) The game that is being played
+
+            highlights: (list) A list of (row_number, col_number) tuples to
+                         highlight on the board
+
         """
-
         raise NotImplementedError
 
-    def print_winner_screen(self, winner: Player = None) -> None:
+    def print_winner_screen(self, winner=None) -> None:
         """
         Prints information which player won.
 
@@ -305,29 +354,13 @@ class TUI:
                             If player is passed as None, then the game was 
                             terminated with a draw
         """
-
-        raise NotImplementedError
-
-    def get_move(self, board: Board, player: Player):
-        """
-        Prompts user to select a valid move and then prints out a board
-        indicating where that piece can go.
-        Input:
-            board (Board) - a board on which a user must select a piece to move
-            player (Player) - a Player object, who is playing the game,
-                                and whose turn it is
-        Output:
-            (tuple(int,int), tuple(int,int)) - a tuple of two tuples, where the 
-                                    first is an original location of a moved
-                                    piece and the second tuple is a final 
-                                    location of the piece.
-        """
         raise NotImplementedError
 
     def get_int_input(self, prompt, range=(-1, -1)):
         """
         This method will repeatedly ask user to select a user to enter an
         integer until a valid value is given.
+        
         Inputs:
             prompt (str) - a message that explains what the input is for
             range (tuple(int, int)) - an inclusive range of accepted values, as
@@ -351,11 +384,53 @@ class TUI:
             false_ans (list[str]) - a list of inputs by user that would be
                             considered to be equivalent to an answer of False
         Output:
-            (bool) - a value of type integer and in a certain range,
+            (bool) - a value of type boolean and in a certain range,
                     if was provided.
+        """
+
+        raise NotImplementedError
+    
+    def get_valid_pos(self, valid_poisitions, prompt="Choose a piece to move"):
+        """
+        This method will repeatedly ask user to select a valid row and column
+        from a list of valid positions. The positions do not get printed in this
+        method.
+
+        Inputs:
+            valid_poisitions (list[tuple(int, int)]) - a list of valid positions a user must chose from.
+
+            prompt (str) - a message that explains what the input is for
+        Output:
+            tuple(int,int)
         """
         raise NotImplementedError
 
+    def get_player_move(self,player,game):
+        """
+        This method will ask user to select a piece to move.
+
+        Inputs:
+            player (Player) - player that has to choose a piece to move
+
+            game (Game) - the game that the player has to choose a piece to move
+        Output:
+            [GamePiece,list[tuple(int,int)]] - the piece that the user chose to move and the move they selected.
+        """
+
+        raise NotImplementedError
+
+def is_bot(player) -> bool:
+    """
+    This method checks if the user passed in parameters is a Bot.
+
+    Input:
+        player (Player) - player or an object that inherits from Player class
+
+    Output:
+        True - if the player is of class that inherits Player
+        False - if the player is of class Player and not its children.
+    """
+    raise NotImplementedError
 
 class TUIGame:
     """
@@ -368,15 +443,17 @@ class TUIGame:
         tui: TUI
     """
 
-    def play_game(self) -> None:
+    def __init__(self, game):
+        raise NotImplementedError
+
+    def play_game(self):
         """
         This function is called to play the game,
         using the board set as a class parameters
-        """  
+        """
+        raise NotImplementedError       
 
-        raise NotImplementedError
-
-    def check_player_lost(self, current_player: Player) -> bool:
+    def check_player_lost(self, current_player):
         """
         Checks if the player lost the game or not
         Input:
@@ -385,10 +462,9 @@ class TUIGame:
             True - if the player has lost the game
             False - if the player has not lost the game
         """
-
         raise NotImplementedError
 
-    def is_draw(self, current_player: Player, next_player: Player) -> bool:
+    def is_draw(self, current_player, next_player):
         """
         Checks if draw is offered and accepted. Prompts users to
         enter their answer to see if the game should end with a draw.
@@ -401,8 +477,8 @@ class TUIGame:
             True - the game should be terminated with a draw
             False - the game continues
         """
-
         raise NotImplementedError
+
 
 # GUI
 class GUIPlayer(Player):

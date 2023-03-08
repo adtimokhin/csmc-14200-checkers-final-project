@@ -2,6 +2,14 @@ from game_piece import GamePiece
 
 
 class Board:
+    """
+    A class that represents the board of the game.
+
+    Attributes:
+    - number_of_rows : The number of rows of the board.
+    - number_of_cols : The number of columns of the board.
+    - grid : The grid of the board. It stores the game pieces.
+    """
      def __init__(self, number_of_rows, number_of_cols):
         self.number_of_rows = number_of_rows
         self.number_of_cols = number_of_cols
