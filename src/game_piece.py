@@ -15,6 +15,9 @@ class GamePiece:
         self.player = player
         self.is_king = False
 
+    def __repr__(self):
+        return f"GP-{self.player}"
+
     def tranform(self):
         """
         Transforms a game piece into a king 
