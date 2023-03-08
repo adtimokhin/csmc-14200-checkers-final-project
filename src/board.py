@@ -48,7 +48,7 @@ class Board:
         
         self.grid[piece.position[0]][piece.position[1]] = piece
 
-    def is_on_grid(self, position):
+     def is_on_grid(self, position):
         """
         Checks if the coordinates given are correspondive to an unoccupied cell on the grid
         If the coordinates are out of bound, then False is returned.
@@ -71,7 +71,7 @@ class Board:
 
         return True
 
-    def is_empty_cell(self, pos):
+     def is_empty_cell(self, pos):
         """
         Checks if the coordinates given are correspondive to an unoccupied cell on the grid
         If the coordinates are out of bound, then False is returned.

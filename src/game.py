@@ -51,20 +51,21 @@ class Game:
                 unsorted_move = unsorted_move[1]
             if new_move != []:
                 sorted_moves.append(new_move)
-        return sorted_moves
+        
+        moves_formatted = []
+        for move in sorted_moves:
+            moves_formatted.append([piece, move])
+        return moves_formatted
             
     def get_all_jumps_moves (self, start_pos, piece):
         player = piece.player
-        direction = -1 if (self.players.index(player) % 2 ==0) else 1
+        direction = -1 if (self.players.index(player) % 2 == 0) else 1
         possible_pieces_moves = ((-1 * direction, -1 * direction), (-1 * direction, 1 * direction))
 
         possible_moves = []
         for coords in possible_pieces_moves:
-                potential_final_pos = (coords[0] + intial_piece_pos[0], coords[1] + intial_piece_pos[1])
+                potential_final_pos = (coords[0] + start_pos[0], coords[1] + start_pos[1])
                 if self.board.is_on_grid(potential_final_pos):
-                    if  piece.is_king:
-                        while self.board.is_empty_cell(potential_final_pos):
-                            potential_final_pos = (coords[0] + potential_final_pos[0], coords[1] + potential_final_pos[1])
                     # If the final position contains enemy piece
                     if not self.board.is_empty_cell(potential_final_pos):
                         if self.board.grid[potential_final_pos[0]][potential_final_pos[1]].player!= player:
@@ -78,6 +79,8 @@ class Game:
             list_of_moves = []
             for move in possible_moves:
                 kol = self.get_all_jumps_moves(move, piece)
+                if kol == []:
+                    list_of_moves.append([move,[]])
                 for item in kol:
                     list_of_moves.append([move, item])
             return list_of_moves
