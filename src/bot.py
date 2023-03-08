@@ -25,8 +25,9 @@ class CheckersBot(Player):
     def choose_move(self, board: Board, possible_moves: list):
         """
         chooses the best possible move
-        :param board: Board class instance: current game_board
-        :return: tuple(GamePiece, tuple(int, int)):  a move in a move format specified in the design
+        :param: board Board class instance: current game_board
+        :param: possible_moves list of moves
+        :return: tuple(GamePiece, [tuple(int, int)]):  a move in a move format specified in the design
         """
 
         valid_moves = possible_moves
@@ -73,14 +74,13 @@ class CheckersBot(Player):
     def aggressive_moves(self, valid_moves: list, board: Board):
         """
         picks the most aggressive move, by choosing the move which minimizes distance to all of the enemy pieces
-        :param valid_moves:
-        :param board: Board class instance: current game_board
+        :param: valid_moves: all of the moves that are accessible to the given bot
+        :param: board: Board class instance: current game_board
         :return: list(moves): list of moves which are the best by given metric
         """
 
         best_moves = []
         lowest_distance = inf
-        name_of_the_opponent = None
 
         for move in valid_moves:
 
@@ -107,8 +107,8 @@ class CheckersBot(Player):
     def check_if_back_pieces(self, valid_moves: list, row_num: int):
         """
         removes defensive pieces from the valid moves
-        :param valid_moves: list of valid moves
-        :param board_size: int: length of the side of the board
+        :param: valid_moves: list of valid moves
+        :param: row_num: int: length of the vertical side of the board
         :return: list[moves]: list of all moves that do not involve back pieces
         """
         best_moves = []
@@ -122,8 +122,8 @@ class CheckersBot(Player):
     def check_if_danger(self, valid_moves: list, board: Board):
         """
         returns all the moves that do not put the piece in danger of being captured
-        :param valid_moves: list of valid moves
-        :param board: Board: game board which is currently played
+        :param: valid_moves: list of valid moves available for the bot
+        :param: board Board: game board which is currently played
         :return: list of all moves that are not loosing a piece
         """
 
@@ -168,11 +168,13 @@ class CheckersBot(Player):
     def best_jump(self, valid_moves: list):
         """
         Out of all jump moves chooses the farthest jump-move (the one which takes the most pieces)
-        :param valid_moves: list of valid moves
+        :param valid_moves: list of valid moves available for the bot
         :return: list of all jumps that capture maximum amount of pieces
         """
         best_moves = []
         biggest_number_of_jumps = 0
+
+        # chooses a move which captures the most of the enemy pieces
         for move in valid_moves:
             if len(move[1]) == biggest_number_of_jumps:
                 best_moves.append(move)
@@ -186,8 +188,8 @@ class CheckersBot(Player):
     def check_if_can_king(self, valid_moves: list, number_of_rows: int):
         """
         Checks if we can turn a piece into a king with one of the moves
-        :param valid_moves: list of valid moves
-        :param number_of_rows: int: length of the vertical side of the board
+        :param: valid_moves list of valid moves
+        :param: number_of_rows int: length of the vertical side of the board
         :return: list of all moves that turn a piece into a king
         """
         best_moves = []
@@ -203,6 +205,7 @@ class RandomBot(Player):
     A bot that is able to make random moves, made for the tests
     Public attributes:
         name: str: name that is also a parameter of a parent class
+        color: color of the pieces of a given bot
     """
     def __init__(self, name: str, color: str):
         super().__init__(name=name, color=color)
@@ -216,22 +219,27 @@ class RandomBot(Player):
         return possible_moves[randint(0, len(possible_moves)-1)]
 
 def main():
-        player_1 = RandomBot("Player 1", "white")
+        player_1 = CheckersBot("Player 1", "white")
         player_2 = RandomBot("Player 2", "black")
         players = [player_1, player_2]
-        game = Game(players, 2, 8)
-        while True:
-            moves = game.get_possible_moves(game.players[0])
-            if len(moves) == 0:
-                break
-            the_move = player_1.choose_move(game.board, moves)
-            game.make_move(the_move)
-            moves = game.get_possible_moves(game.players[1])
-            if len(moves) == 0:
-                print('random bot lost')
-                break
-            the_move = player_2.choose_move(game.board, moves)
-            game.make_move(the_move)
+        game = Game(players, 3, 8)
+        clever_won = 0
+        for i in range(100):
+            while True:
+                moves = game.get_possible_moves(game.players[0])
+                if len(moves) == 0:
+                    print(game.board.grid)
+                    break
+                the_move = player_1.choose_move(game.board, moves)
+                game.make_move(the_move)
+                moves = game.get_possible_moves(game.players[1])
+                if len(moves) == 0:
+                    print('random bot lost')
+                    clever_won += 1
+                    break
+                the_move = player_2.choose_move(game.board, moves)
+                game.make_move(the_move)
+        print(clever_won/100)
 
 if __name__ == "__main__":
     main()
