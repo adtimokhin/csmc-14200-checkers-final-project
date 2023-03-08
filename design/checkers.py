@@ -2,8 +2,29 @@
 This is where we put all of our documentation 
 """
 
-# TODO: There was supposed to be a list of example calls to methods at the top of the file.
-
+"""
+Example calls:
+>>> game = Game(players, number_populated_rows=2, width=8)
+>>> game.get_possible_moves_for_piece(game.pieces_dict[player_1])
+>>> game.get_possible_jumps_for_piece(selected_piece)
+>>> game.get_all_jumps_moves(selected_piece.position, selected_piece)
+>>> game.get_possible_moves(current_player)
+>>> game.make_move(game.get_possible_jumps_for_piece(selected_piece)[0])
+>>> board.move_piece((0,1), (1,0), game)
+>>> board.place_piece(GamePiece(...))
+>>> board.is_on_grid((9,3))
+>>> board.is_empty_cell((9,3))
+>>> board.remove_piece(GamePiece(...))
+>>> gamepiece.transform()
+>>> checkers_bot.choose_move(board, game.get_all_jumps_moves(selected_piece.position, selected_piece))
+>>> checkers_bot.aggressive_moves(self, valid_moves, board)
+>>> TUI.print_board(game)
+>>> TUI.get_bool_input("Do you want to surrender?", true_ans=["y", "sure", "yes"], false_ans=["n", "no", "nope"]):
+>>> TUIGame.play_game()
+>>> draw_board(game, WINDOW)
+>>> play_checkers(game)
+>>> get_piece(board, (9,5))
+"""
 
 class Game:
     """
@@ -495,7 +516,7 @@ def get_position(coordinates, game):
     '''
     raise NotImplementedError
 
-def draw_board(game, surface, game_piece = None) -> None:
+def draw_board(game, surface, game_piece = None):
     """ 
     Draws the current state of the board in the window
     Args:
