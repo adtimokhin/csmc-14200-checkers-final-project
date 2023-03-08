@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/cs-project-ebat.iml" filepath="$PROJECT_DIR$/.idea/cs-project-ebat.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/cs_project_blyat.iml" filepath="$PROJECT_DIR$/.idea/cs_project_blyat.iml" />
     </modules>
   </component>
 </project>

@@ -2,8 +2,29 @@
 This is where we put all of our documentation 
 """
 
-# TODO: There was supposed to be a list of example calls to methods at the top of the file.
-
+"""
+Example calls:
+>>> game = Game(players, number_populated_rows=2, width=8)
+>>> game.get_possible_moves_for_piece(game.pieces_dict[player_1])
+>>> game.get_possible_jumps_for_piece(selected_piece)
+>>> game.get_all_jumps_moves(selected_piece.position, selected_piece)
+>>> game.get_possible_moves(current_player)
+>>> game.make_move(game.get_possible_jumps_for_piece(selected_piece)[0])
+>>> board.move_piece((0,1), (1,0), game)
+>>> board.place_piece(GamePiece(...))
+>>> board.is_on_grid((9,3))
+>>> board.is_empty_cell((9,3))
+>>> board.remove_piece(GamePiece(...))
+>>> gamepiece.transform()
+>>> checkers_bot.choose_move(board, game.get_all_jumps_moves(selected_piece.position, selected_piece))
+>>> checkers_bot.aggressive_moves(self, valid_moves, board)
+>>> TUI.print_board(game)
+>>> TUI.get_bool_input("Do you want to surrender?", true_ans=["y", "sure", "yes"], false_ans=["n", "no", "nope"]):
+>>> TUIGame.play_game()
+>>> draw_board(game, WINDOW)
+>>> play_checkers(game)
+>>> get_piece(board, (9,5))
+"""
 
 class Game:
     """
@@ -231,93 +252,89 @@ class CheckersBot(Player):
     """
     CheckersBot is a child class of Player which with the simple heuristics suggests a move
     Public attributes:
-    name: str  - name of the player, continuation of player interface
+        name: str  - name of the player, continuation of player interface
     Heuristics:
-        1. Try to king with every possible opportunity
-        2. Try to move so that the piece is not attacked
-        3. Chose the longest jumps
-        4. Move aggressively (closer to the enemy pieces but not such that they are attacked
-        5. Don't move two back(flank) pieces if possible
-        """
-
+    1. Try to king with every possible opportunity
+    2. Try to move so that the piece is not attacked
+    3. Chose the longest jumps
+    4. Move aggressively (closer to the enemy pieces but not such that they are attacked
+    5. Don't move two back(flank) pieces if possible
+    """
     def __init__(self, name: str, color: str):
-        """same __init__ as a player"""
         raise NotImplementedError
 
-    def choose_move(self, board: Board):
+    def choose_move(self, board: Board, possible_moves: list):
         """
         chooses the best possible move
-        :param board: Board class instance: current game_board
-        :return: tuple(GamePiece, tuple(int, int)):  a move in a move format specified in the design
+        :param: board Board class instance: current game_board
+        :param: possible_moves list of moves
+        :return: tuple(GamePiece, [tuple(int, int)]):  a move in a move format specified in the design
         """
+
         raise NotImplementedError
 
     def aggressive_moves(self, valid_moves: list, board: Board):
         """
         picks the most aggressive move, by choosing the move which minimizes distance to all of the enemy pieces
-        :param valid_moves:
-        :param board: Board class instance: current game_board
+        :param: valid_moves: all of the moves that are accessible to the given bot
+        :param: board: Board class instance: current game_board
         :return: list(moves): list of moves which are the best by given metric
         """
+
         raise NotImplementedError
 
-    def check_if_back_pieces(self, valid_moves: list, board_size: int):
+    def check_if_back_pieces(self, valid_moves: list, row_num: int):
         """
         removes defensive pieces from the valid moves
-        :param valid_moves: list of valid moves
-        :param board_size: int: length of the side of the board
+        :param: valid_moves: list of valid moves
+        :param: row_num: int: length of the vertical side of the board
         :return: list[moves]: list of all moves that do not involve back pieces
         """
-
         raise NotImplementedError
 
     def check_if_danger(self, valid_moves: list, board: Board):
         """
         returns all the moves that do not put the piece in danger of being captured
-        :param valid_moves: list of valid moves
-        :param board: Board: game board which is currently played
+        :param: valid_moves: list of valid moves available for the bot
+        :param: board Board: game board which is currently played
         :return: list of all moves that are not loosing a piece
         """
-
         raise NotImplementedError
 
     def best_jump(self, valid_moves: list):
         """
         Out of all jump moves chooses the farthest jump-move (the one which takes the most pieces)
-        :param valid_moves: list of valid moves
+        :param valid_moves: list of valid moves available for the bot
         :return: list of all jumps that capture maximum amount of pieces
         """
-
         raise NotImplementedError
 
-    def check_if_can_king(self, valid_moves: list, board_size: int):
+    def check_if_can_king(self, valid_moves: list, number_of_rows: int):
         """
         Checks if we can turn a piece into a king with one of the moves
-        :param valid_moves: list of valid moves
-        :param board_size: int: length of the side of the board
+        :param: valid_moves list of valid moves
+        :param: number_of_rows int: length of the vertical side of the board
         :return: list of all moves that turn a piece into a king
         """
-
         raise NotImplementedError
 
 class RandomBot(Player):
-        """
-        A bot that is able to make random moves, made for the tests
-        Public attributes:
-            name: str: name that is also a parameter of a parent class
-        """
+    """
+    A bot that is able to make random moves, made for the tests
+    Public attributes:
+        name: str: name that is also a parameter of a parent class
+        color: color of the pieces of a given bot
+    """
+    def __init__(self, name: str, color: str):
+        raise NotImplementedError
 
-        def __init__(self, name: str, color: str):
-            """same __init__ as a player"""
-            raise NotImplementedError
-
-        def choose_move(self, board):
-            """
-            Randomly chooses a move
-            :param board: Board class instance: current game_board
-            :return: tuple(GamePiece, tuple(int, int)): a tuple in a move format specified in the design
-            """
-            raise NotImplementedError
+    def choose_move(self, board, possible_moves):
+        """
+        Randomly chooses a move
+        :param board: Board class instance: current game_board
+        :return: tuple(GamePiece, tuple(int, int)): a tuple in a move format specified in the design
+        """
+        raise NotImplementedError
 
 # TUI
 class TUI:
@@ -481,42 +498,25 @@ class TUIGame:
 
 
 # GUI
-class GUIPlayer(Player):
-    """
-    Simple class to store information about a GUI player
-    Attributes:
-        player: Player
-        board: Board
-    """
-
-def is_players_piece(surface, coordinates, player_pieces_color):
-    """
-    Checks if selected piece belongs to a given player
-
-    Input:
-        surface (Surface)
-        coordinates () coordinates clicked
-        player_pieces_color (String) color of player
-
-    Output:
-        bool - True is piece selected belongs to player, False otherwise.
-    """
-
+def is_players_piece(surface, coordinates, player_color):
+    '''
+    Checks if the selected location stores the piece of a given player
+    '''
     raise NotImplementedError
 
-def get_position(coordinates):
-    """
-    Gets position of the piece through game coordinates
-
-    Input:
-        coordinates - coordinates clicked
-
-    Output:
-        (int, int) - tuple of location of the gamepiece
-    """
+def get_piece(board, coordinates):
+    '''
+    Finds and returns the piece (GamePiece) on the board given its coordinates
+    '''
     raise NotImplementedError
 
-def draw_board(board: Board, surface, player_color, game_piece = None) -> None:
+def get_position(coordinates, game):
+    '''
+    Converts pixel coordinates into board position (row, column)
+    '''
+    raise NotImplementedError
+
+def draw_board(game, surface, game_piece = None):
     """ 
     Draws the current state of the board in the window
     Args:
@@ -526,61 +526,38 @@ def draw_board(board: Board, surface, player_color, game_piece = None) -> None:
     """
     raise NotImplementedError
 
-def selected_piece(game_piece: GamePiece):
-    """
-    Suggests what cells a given piece can be moved to.
+def play_checkers(game):
+    '''
+    Plays a game of Checkers on a Pygame window
+    Args:
+        board: The board to play on
+        players: A list of players (GUIPlayer objects)
+    Returns: None
+    '''
+    raise NotImplementedError
 
+def is_piece_moved(game,piece_to_move, selected_final_position, should_be_jump):
+    """
+    Checks if the piece is moved or not
     Input:
-        game_piece (GamePiece)
-    
+        piece_to_move (GamePiece) - the piece to move
+        selected_final_position (tuple) - the final position of the piece
+        should_be_jump (bool) - if the move should be a jump (because the player
+                                 has to jump if possible)
     Output:
-        tuple(int,int) - positions to move the piece.
+        True - if the piece is moved to a valid location
+        False - if the piece is not moved to a valid location
     """
     raise NotImplementedError
 
-def move_piece(init_pos, final_pos):
+def check_player_lost(game, current_player):
     """
-    Moves piece on the board from init_pos to final_pos.
-
+    Checks if the player lost the game or not
     Input:
-        init_pos - (int,int) initial position
-        final_pos - (int, int) final position
-    """
-    raise NotImplementedError
-
-def remove_piece(position):
-    """
-    Removes piece from the given position
-
-    Input:
-        position (int,int) - position to remove a piece from
-    """
-    raise NotImplementedError
-
-def change_player(players):
-    """
-    Changes a player that makes a move
-
-    Input:
-        players (list[Player]) - players that play the game
-    """
-    raise NotImplementedError
-
-def play_checkers(board: Board):
-    """
-    Plays the game of checkers on a board provided.
-
-    Input:
-        board (Board) - board to play the game on.
-    """
-    raise NotImplementedError
-
-def is_end():
-    """
-    Checks if the game is over.
-
+        current_player (Player) - a player whose turn it is
     Output:
-        True - if the game is over.
-        False - otherwise.
+        True - if the player has lost the game
+        False - if the player has not lost the game
     """
     raise NotImplementedError
+ 
