@@ -1,8 +1,8 @@
 from random import randint
-from player import Player
-from board import Board
-from game import Game
-from game_piece import GamePiece
+from src.player import Player
+from src.board import Board
+from src.game import Game
+from src.game_piece import GamePiece
 
 from math import inf
 # https://hobbylark.com/board-games/Checkers-Strategy-Tactics-How-To-Win - strategy source
@@ -133,6 +133,7 @@ class CheckersBot(Player):
 
         for move in valid_moves:
 
+            current_piece = move[0]
             coordinates = move[1][-1]
 
             if coordinates[1] in (0, board.number_of_cols-1) or coordinates[0] in (0, board.number_of_rows-1):
@@ -152,12 +153,12 @@ class CheckersBot(Player):
                     # then the moving piece can be captured and hence the move is
                     # disqualified as a safe move
                     if diagonal[0] != None:
-                        if diagonal[1] is None and diagonal[0].player != current_player:
+                        if (diagonal[1] is None or diagonal[1] == current_piece) and diagonal[0].player != current_player:
                             validity = False
                             break
 
                     if diagonal[1] != None:
-                        if diagonal[0] is None and diagonal[1].player != current_player:
+                        if (diagonal[0] is None or diagonal[0]) and diagonal[1].player != current_player:
                             validity = False
                             break
 
@@ -220,27 +221,26 @@ class RandomBot(Player):
         return possible_moves[randint(0, len(possible_moves) - 1)]
 
 def main():
-        player_1 = CheckersBot("Player 1", "white")
-        player_2 = RandomBot("Player 2", "black")
-        players = [player_1, player_2]
-        game = Game(players, 3, 8)
-        clever_won = 0
-        for i in range(100):
+    """over 100 games, runs a game between random bot and prints win-rate of the current bot"""
+    player_1 = CheckersBot("Player 1", "white")
+    player_2 = RandomBot("Player 2", "black")
+    players = [player_1, player_2]
+    game = Game(players, 3, 8)
+    clever_won = 0
+    for i in range(100):
             while True:
-                moves = game.get_possible_moves(game.players[0])
+                moves = game.get_possible_moves(players[0])
                 if len(moves) == 0:
-                    print(game.board.grid)
                     break
                 the_move = player_1.choose_move(game.board, moves)
                 game.make_move(the_move)
                 moves = game.get_possible_moves(game.players[1])
                 if len(moves) == 0:
-                    print('random bot lost')
                     clever_won += 1
                     break
                 the_move = player_2.choose_move(game.board, moves)
                 game.make_move(the_move)
-        print(clever_won/100)
+    print(clever_won/100)
 
 if __name__ == "__main__":
     main()
