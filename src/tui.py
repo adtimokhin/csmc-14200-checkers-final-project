@@ -36,32 +36,46 @@ class TUI:
 
         """
         board = game.board
-
+        player_colours = list(player.color for player in game.players) 
         board_colours = ["#eddad3", "#4a2112"]  # Colours of the game board pieces
 
-        separator_line = "+-" * board.number_of_cols + "+"
+        spaces_at_front = math.floor(math.log10(board.number_of_cols))
+
+        # separator_line = " "+f"+-" * board.number_of_cols + "+"
+        top_line = (" " * spaces_at_front) + " " # This space is for the top line of the board
+        for i in range(1, board.number_of_cols+1):
+            top_line += (" " * (spaces_at_front -
+                                   math.floor(math.log10(i)))) + f" {i}"
+
+        separator_line = (" " * spaces_at_front) + " " + ("+" + "-" *
+                            (spaces_at_front + 1)) *board.number_of_cols + "+"
+        self.console.print(top_line)
         self.console.print(separator_line)
         row_number = 0
         for row in board.grid:
-            # 1. Print the row content
-            
-            line_to_print = "|"
+            line_to_print = (" " * (spaces_at_front - math.floor(
+                math.log10(row_number + 1)))) + f"{row_number + 1}|"
             col_number = 0
             for col in row:
                 bg_colour = "on " + board_colours[(row_number + col_number) % 2]
                 char_to_print = " "
                 if col is not None:
+                    player_index = game.players.index(col.player)
                     if col.is_king:
                         char_to_print = "K"
                     else:
                         char_to_print = "O"
-                line_to_print += f"[{bg_colour}]{char_to_print}[/{bg_colour}]|"
+                    # Adding color to the symbol
+                    char_to_print = f"[{player_colours[player_index]}]{char_to_print}[/{player_colours[player_index]}]"
+                line_to_print += f"[{bg_colour}]"+f" " * ((spaces_at_front)) +f"{char_to_print}[/{bg_colour}]|"
                 col_number += 1
+            # 1. Print the row content
             self.console.print(line_to_print)
+            # 2. Print the separator line
             self.console.print(separator_line)
             row_number += 1
 
-            # 2. Print the separator line
+            
 
 
 class TUIGame:
@@ -83,11 +97,11 @@ class TUIGame:
 
 # @click.command(name="checkers-tui")
 def cmd():
-    player_1 = Player("Player 1", "white")
-    player_2 = Player("Player 2", "black")
+    player_1 = Player("Player 1", "#5442f5")
+    player_2 = Player("Player 2", "#42f2f5")
     players = [player_1, player_2]
 
-    game = Game(players, 2)
+    game = Game(players, 2,6)
     tui_game = TUIGame(game)
     tui_game.play_game()
 
