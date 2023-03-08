@@ -28,9 +28,11 @@ class Board:
         
         if self.grid[final_pos[0]][final_pos[1]] is not None:
             raise Exception("There is piece at the final position")
+
         self.grid[initial_pos[0]][initial_pos[1]].position = final_pos
         self.grid[final_pos[0]][final_pos[1]] = self.grid[initial_pos[0]][initial_pos[1]]
         self.grid[initial_pos[0]][initial_pos[1]] = None
+        
         if abs(initial_pos[0] - final_pos[0]) == 2:
             row_to_remove = (initial_pos[0] + final_pos[0]) // 2
             column_to_remove = (initial_pos[1] + final_pos[1]) // 2

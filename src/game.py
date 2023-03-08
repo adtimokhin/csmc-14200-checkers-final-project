@@ -105,10 +105,17 @@ class Game:
         :param player
             Player for whom possible moves are found
         :returns
-            list[(piece, (int, int))] - list of tuples that show a piece and a possible move coordinate
+            list[[piece, [int, int]]] - list of tuples that show a piece and a possible move coordinate
             if jumps are possible returns only jump-moves
         """
-        raise NotImplementedError
+        player_pieces = self.pieces_dict.get(player, [])
+        all_possible_moves = []
+
+        for piece in player_pieces:
+            possible_moves = self.get_possible_moves_for_piece(piece)
+            if possible_moves != []:
+                all_possible_moves.extend(possible_moves)
+        return all_possible_moves
 
     def get_all_jumps(self, player):
         """
@@ -120,7 +127,14 @@ class Game:
             or None if no 'jump-moves' are found
 
         """
-        raise NotImplementedError
+        player_pieces = self.pieces_dict.get(player, [])
+        all_possible_moves = []
+        
+        for piece in player_pieces:
+            possible_moves = self.get_possible_jumps_for_piece(piece)
+            if possible_moves != []:
+                all_possible_moves.extend(possible_moves)
+        return all_possible_moves
     
     def __populate_board(self):
 
