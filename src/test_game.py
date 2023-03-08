@@ -1,4 +1,4 @@
-from src.game import Game
+from game import Game
 from player import Player
 from game_piece import GamePiece
 from board import Board
@@ -7,7 +7,7 @@ def main():
     player_1 = Player("Player 1", "white")
     player_2 = Player("Player 2", "black")
     players = [player_1, player_2]
-    game = Game(players, 2, 5)
+    game = Game(players, 2, 7)
 
     player_1_pieces = game.pieces_dict[player_1]
     player_2_pieces = game.pieces_dict[player_2]
@@ -31,6 +31,10 @@ def main():
     game.board.place_piece(new_piece_1)
 
     new_piece_1 = GamePiece( (3, 3), player_2)
+    game.pieces_dict[player_2] = game.pieces_dict[player_2] + [new_piece_1]
+    game.board.place_piece(new_piece_1)
+
+    new_piece_1 = GamePiece( (3, 5), player_2)
     game.pieces_dict[player_2] = game.pieces_dict[player_2] + [new_piece_1]
     game.board.place_piece(new_piece_1)
 
