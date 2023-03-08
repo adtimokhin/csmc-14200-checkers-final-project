@@ -1,5 +1,5 @@
-from board import Board
-from game_piece import GamePiece
+from src.board import Board
+from src.game_piece import GamePiece
 class Game:
     """
     Public attributes of this class:
