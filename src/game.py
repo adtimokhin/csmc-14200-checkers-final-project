@@ -71,8 +71,19 @@ class Game:
             moves_formatted.append([piece, move])
         return moves_formatted
 
-            
     def get_all_jumps_moves (self, start_pos, piece, blocked_pos=[]):
+        """
+        finds all possible jumps for a given piece
+        :param start_pos
+            the starting position of the piece
+        :param piece
+            the specific game piece for which the jumps are found
+        :param blocked_pos
+            a list of coordinates which the piece cannot jump over.
+        :returns
+            either list[(int,int)] which is a list of tuples of coordinates, representing jumps,
+            or None
+        """
         player = piece.player
         direction = -1 if (self.players.index(player) % 2 == 0) else 1
         if piece.is_king:
@@ -147,7 +158,6 @@ class Game:
         return list_to_return
     
     def __populate_board(self):
-
         """
         Populates the board with Game_Pieces accroding to the rules of checkers.
         """
@@ -166,8 +176,6 @@ class Game:
                 self.board.place_piece(second_piece)
 
                 self.pieces_dict[self.players[1]].append(second_piece)
-
-
 
     def make_move(self, move):
         """
