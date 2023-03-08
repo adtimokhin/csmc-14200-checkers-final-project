@@ -214,7 +214,7 @@ class RandomBot(Player):
         :param board: Board class instance: current game_board
         :return: tuple(GamePiece, tuple(int, int)): a tuple in a move format specified in the design
         """
-        return possible_moves[randint(0, len(possible_moves)-1)]
+        return possible_moves[randint(0, len(possible_moves) - 1)]
 
 def main():
         player_1 = RandomBot("Player 1", "white")

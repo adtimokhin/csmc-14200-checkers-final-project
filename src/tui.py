@@ -20,10 +20,6 @@ class TUI:
     (Text-Based User Interface).
     Both input and output functions are located here
     """
-
-    REGULAR_GAME_PIECE_SYMBOL = "O"
-    KING_GAME_PIECE_SYMBOL ="K"
-
     def __init__(self):
         self.console = Console()
     
@@ -243,9 +239,7 @@ class TUI:
             jump_index = -1 + self.get_int_input("Select a jump number that you will make: " , (1,len(moves_paths)))
             return possible_piece_moves[jump_index]
 
-
-
-         
+  
 def is_bot(player) -> bool:
     """
     This method checks if the user passed in parameters is a Bot.
@@ -260,15 +254,13 @@ def is_bot(player) -> bool:
     return type(player) is RandomBot or type(player) is CheckersBot
    
 
-
 class TUIGame:
     
     def __init__(self, game):
         self.game = game
         self.tui = TUI()
 
-
-    def play_game(self) -> None:
+    def play_game(self):
         """
         This function is called to play the game,
         using the board set as a class parameters
@@ -317,7 +309,6 @@ class TUIGame:
         # be provided
         winner = None if is_draw else self.game.players[(turn + 1) % player_count]
         self.tui.print_winner_screen(winner)         
-
 
     def check_player_lost(self, current_player):
         """
