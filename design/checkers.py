@@ -2,43 +2,20 @@
 This is where we put all of our documentation 
 """
 
-class Board:
+# TODO: There was supposed to be a list of example calls to methods at the top of the file.
+
+
+class Game:
     """
-     Public attributes of this class:
-        grid: list[list[Piece]]
-        n: int
-        pieces_dictionary: dict{player: [Game_piece]}
-        players: list of players that play on the boatd list[Player]
-    This class is representing a squared board.
-    This is a container class for game pieces.
-    Grid is a 2d array which logically represents the board.
-    Game_piece class instances are stored both in the grid and 
-    in the pieces_dictionary.
-    size is the length of the side of the board.
+    Public attributes of this class:
+        board: Board
+        players: list[Player]
     """
-    def __init__(self, number_of_rows):
-        """
-        Creates a board of size (2*number_of_rows+2) by (2*number_of_rows+2)
-        and sets pieces to the initial positions
-        :param number_of_rows:
-            This is the number of rows filled with checkers pieces per player
-            The size of the board will be adjusted.
-        :returns
-            None
-        """
-        raise NotImplementedError
-        
-    def __repr__(self):
-        """
-        Returns a printable representation of Board as a string
-        :param 
-            None
-        :returns
-            str - representation of board
-        """
-        raise NotImplementedError
-        
-    def get_possible_jumps(self, piece: GamePiece):
+
+    def __init__(self):
+        pass
+
+    def get_possible_jumps(self, piece):
         """
         finds all the possible jumps of a given piece on the board
         :param piece
@@ -59,7 +36,7 @@ class Board:
         """
         raise NotImplementedError
         
-    def get_possible_moves_for_piece(self, piece: GamePiece):
+    def get_possible_moves_for_piece(self, piece):
         """
         finds possible moves for a given piece
         :param piece
@@ -70,18 +47,7 @@ class Board:
         """
         raise NotImplementedError
 
-    def valid_moves(self, player: Player):
-        """
-        finds all possible moves for a given player
-        :param player
-            Player for whom possible moves are found
-        :returns
-            list[(piece, (int, int))] - list of tuples that show a piece and a possible move coordinate
-            if jumps are possible returns only jump-moves
-        """
-        raise NotImplementedError
-
-    def get_all_jumps(self, player: Player):
+    def get_all_jumps(self, player):
         """
         finds all possible jump-moves for a given player
         :param player
@@ -92,8 +58,40 @@ class Board:
 
         """
         raise NotImplementedError
+    
+    def make_move(self, initial_pos: tuple, final_pos: tuple):
+        """
+        Moves a Game_Piece from initial position to final position on the grid
+        removes a Piece from the board if the 'jump-move' was performed
+        :param initial_pos:
+            (int, int) - represents the coordinates of the piece as (row, col)
+        :param final_pos:
+            (int, int) - represents the coordinates of the piece as (row, col)
+        :returns
+            None
+        """
+        pass
+    
+    
 
-    def perform_move(self, initial_pos: tuple, final_pos: tuple):
+class Board:
+    """
+     Public attributes of this class:
+        grid: list[list[Piece]]
+        n: int
+        pieces_dictionary: dict{player: [Game_piece]}
+        players: list of players that play on the boatd list[Player]
+    This class is representing a squared board.
+    This is a container class for game pieces.
+    Grid is a 2d array which logically represents the board.
+    Game_piece class instances are stored both in the grid and 
+    in the pieces_dictionary.
+    size is the length of the side of the board.
+    """
+    def __init__(self, number_of_rows, number_of_cols):
+        raise NotImplementedError
+
+    def move_piece(self, initial_pos: tuple, final_pos: tuple):
         """
         Moves a Game_Piece from initial position to final position on the grid
         removes a Piece from the board if the 'jump-move' was performed
@@ -126,45 +124,7 @@ class Board:
         """
         raise NotImplementedError
 
-    def is_jump(self, initial_pos: tuple, final_pos: tuple):
-        """
-        Checks if moving from initial_pos to final_pos is a 'jump-move'
-        :param initial_pos:
-            (int, int) - represents the coordinates on the board as (row, col)
-        :param final_pos:
-            (int, int) - represents the coordinates on the board as (row, col)
-        :returns
-            True if given move is a jump-move
-            False otherwise
-        """
-        raise NotImplementedError
-        
-    def move_piece(self, initial_pos=(0, 0), final_pos=(0, 0), player=None):
-        """
-        Moves the piece from the initial to final position according to the player's move
-        :param initial_pos
-            (int, int) - represents the coordinates of the piece as (row, col)
-        :param final_pos
-            (int, int) - represents the coordinates of the piece as (row, col)
-        :returns
-            None
-        """
-        raise NotImplementedError
-
-    def is_empty_cell(self, pos):
-        """
-        Checks if the coordinates given are correspondive to an unoccupied cell on the grid.
-        If the coordinates are out of bound, then False is returned.
-        :param
-            pos - (int, int) is a position coordinates of the cell. Given as (row, col)
-        :returns
-            True - if the cell is in range of board and also is not occupied
-            False - otherwise
-        """
-        raise NotImplementedError
-
-
-class GamePiece(Board): 
+class GamePiece: 
     """
     Public attributes of this class:
         position: tuple(row, column)
@@ -197,18 +157,6 @@ class GamePiece(Board):
         """
         raise NotImplementedError
 
-    def change_position(self, final_pos): 
-        """
-        Changes the position of the game piece on the board, given its final 
-        position
-        :param final_pos 
-            tuple(row, column) - final position which needs to be 
-            attributed to the game piece 
-        :returns
-            None
-        """
-        raise NotImplementedError
-
 
 class Player:
 
@@ -218,7 +166,7 @@ class Player:
         name (str) - name of the player
     """
     
-    def __init__(self, name: str):
+    def __init__(self, name: str, color: str):
         """
         Creates a Player insrtance with a given name
         :param name:
@@ -228,31 +176,6 @@ class Player:
         """
         raise NotImplementedError
     
-    def choose_move(self, board=None):
-        """
-        Requires PLayer to chose a valid move option and
-        returns that option as a tuple of coordinates.
-        
-        :returns
-            ((int,int), (int,int)) - a touple of two tuples, where the first
-            tuple is a topuple containing intial coordinates of Player's owned
-            piece and the second tuple is a set of final coordinates of the
-            same piece.
-        """
-        raise NotImplementedError
-    
-    def offer_draw(self):
-        """
-        Requires Plyer to chose whether they want to offer 
-        draw to another Player.
-
-        :returns
-            True if the Players wants to offer a draw
-            False otherwise
-        """
-        raise NotImplementedError
-
-    def accept_draw(self):
         """
         Requires Plyer to chose whether they want to accept
         draw from another Player.
