@@ -1,5 +1,5 @@
 class GamePiece: 
-     def __init__(self, position, player): 
+    def __init__(self, position, player):
         """
         Constructor
         :param position:

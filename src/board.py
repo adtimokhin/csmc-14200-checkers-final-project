@@ -10,7 +10,7 @@ class Board:
                 line.append(None)
             self.grid.append(line)
 
-    def move_piece(self, initial_pos: tuple, final_pos: tuple):
+     def move_piece(self, initial_pos: tuple, final_pos: tuple):
         """
         Moves a piece from initial position to final position
         
@@ -32,7 +32,7 @@ class Board:
         self.grid[final_pos[0]][final_pos[1]] = self.grid[initial_pos[0]][initial_pos[1]]
         self.grid[initial_pos[0]][initial_pos[1]] = None
 
-    def place_piece(self, piece):
+     def place_piece(self, piece):
         """
         Places a piece on the board
         
@@ -48,7 +48,7 @@ class Board:
         
         self.grid[piece.position[0]][piece.position[1]] = piece
 
-    def remove_piece(self, piece):
+     def remove_piece(self, piece):
         """
         Removes a piece from the board
         
