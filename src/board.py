@@ -10,7 +10,7 @@ class Board:
     - number_of_cols : The number of columns of the board.
     - grid : The grid of the board. It stores the game pieces.
     """
-     def __init__(self, number_of_rows, number_of_cols):
+    def __init__(self, number_of_rows, number_of_cols):
         self.number_of_rows = number_of_rows
         self.number_of_cols = number_of_cols
         self.grid = []
@@ -21,7 +21,7 @@ class Board:
                 line.append(None)
             self.grid.append(line)
 
-     def move_piece(self, initial_pos: tuple, final_pos: tuple, game):
+    def move_piece(self, initial_pos: tuple, final_pos: tuple, game):
         """
         Moves a piece from initial position to final position
 
@@ -52,7 +52,7 @@ class Board:
         if final_pos[0] == 0 or final_pos[0] == self.number_of_rows -1:
             self.grid[final_pos[0]][final_pos[1]].transform()
 
-     def place_piece(self, piece):
+    def place_piece(self, piece):
         """
         Places a piece on the board.
 
@@ -67,7 +67,7 @@ class Board:
         
         self.grid[piece.position[0]][piece.position[1]] = piece
 
-     def is_on_grid(self, position):
+    def is_on_grid(self, position):
         """
         Checks if the coordinates given are correspondive to an unoccupied cell on the grid
         If the coordinates are out of bound, then False is returned.
@@ -90,7 +90,7 @@ class Board:
 
         return True
 
-     def is_empty_cell(self, pos):
+    def is_empty_cell(self, pos):
         """
         Checks if the coordinates given are correspondive to an unoccupied cell on the grid
         If the coordinates are out of bound, then False is returned.
@@ -112,7 +112,7 @@ class Board:
         # Checking if the cell is occupied or not
         return self.grid[row_pos][col_pos] is None
 
-     def remove_piece(self, piece, game):
+    def remove_piece(self, piece, game):
         """
         Removes a piece from the board.
 
