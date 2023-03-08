@@ -27,7 +27,7 @@ class TUI:
     def __init__(self):
         self.console = Console()
     
-    def print_board(self, game):
+    def print_board(self, game, highlights=[]):
         """
         This function prints the board to the console
 
@@ -38,6 +38,7 @@ class TUI:
         board = game.board
         player_colours = list(player.color for player in game.players) 
         board_colours = ["#eddad3", "#4a2112"]  # Colours of the game board pieces
+        highlight_colour = "on blue"
 
         spaces_at_front = math.floor(math.log10(board.number_of_cols))
 
@@ -58,6 +59,8 @@ class TUI:
             col_number = 0
             for col in row:
                 bg_colour = "on " + board_colours[(row_number + col_number) % 2]
+                if (row_number, col_number) in highlights:
+                    bg_colour = highlight_colour
                 char_to_print = " "
                 if col is not None:
                     player_index = game.players.index(col.player)
@@ -157,7 +160,51 @@ class TUI:
             self.console.print("[green]DRAW![/green] There is no winner")
         else:
             self.console.print(f"Winner: [on green]{winner.name}[/on green]")
-        self.console.print("-"*10)    
+        self.console.print("-"*10)  
+
+    def get_valid_pos(self, valid_poisitions):
+        row = -1
+        col = -1
+
+        while (row,col) not in valid_poisitions:
+            self.console.print("Choose a piece to move")
+
+            row = -1 + self.get_int_input("Select a row: ")
+            col = -1 + self.get_int_input("Select a column: ")
+
+            if (row, col) not in valid_poisitions:
+                self.console.print("Invalid position")
+        return (row, col)
+
+    def get_player_move(self,player,game):
+        possible_jumps = game.get_all_jumps(player)
+        if possible_jumps == []:
+            possible_moves = game.get_possible_moves(player)
+            pieces_that_can_be_moved = []
+            for move in possible_moves:
+                pieces_that_can_be_moved.append(move[0])
+            pieces_that_can_be_moved = list(set(pieces_that_can_be_moved)) # Remove duplicates
+
+            pieces_that_can_be_moved_pos = list(piece.position for piece in pieces_that_can_be_moved)
+            # Print the board with pieces that can be moved
+            self.console.print(f"[on green]{player.name}[/on green] can move this pieces:")
+            self.print_board(game, highlights=pieces_that_can_be_moved_pos)
+
+            # Force user to chose valid game_piece position
+            valid_piece_pos = self.get_valid_pos(pieces_that_can_be_moved_pos)
+            piece_to_move = game.board.grid[valid_piece_pos[0]][valid_piece_pos[1]]
+
+            # Print possible moves for that piece
+            possible_piece_moves = game.get_possible_moves_for_piece(piece_to_move)
+            arriving_positions = []
+            for move in possible_piece_moves:
+                arriving_positions.append(move[1][-1])
+            self.console.print(f"[on green]{player.name}[/on green] This is where you can move your piece to:")
+            self.print_board(game, highlights=arriving_positions)
+
+
+
+
 
          
 def is_bot(player) -> bool:
@@ -212,10 +259,15 @@ class TUIGame:
                     continue   
                 # When the game is over, a description of how the game ended should 
              
+
+            # Asking for players move.
+
+            self.tui.get_player_move(current_player, self.game)
+
             # Updating some pointers
             turn += 1
-            current_player = self.players[turn % player_count]
-            next_player = self.players[(turn + 1) % player_count]
+            current_player = self.game.players[turn % player_count]
+            next_player = self.game.players[(turn + 1) % player_count]
 
         # When the game is over, a description of how the game ended should 
         # be provided

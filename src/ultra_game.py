@@ -1,7 +1,7 @@
-from src.game import Game
-from src.player import Player
-from src.board import Board
-from src.game_piece import GamePiece
+from game import Game
+from player import Player
+from board import Board
+from game_piece import GamePiece
 
 def main():
     player_1 = Player("Player 1", "white")
