@@ -57,7 +57,7 @@ class Game:
             moves_formatted.append([piece, move])
         return moves_formatted
             
-    def get_all_jumps_moves (self, start_pos, piece, blocked_pos=("a","a")):
+    def get_all_jumps_moves (self, start_pos, piece, blocked_pos=[]):
         player = piece.player
         direction = -1 if (self.players.index(player) % 2 == 0) else 1
         if piece.is_king:
@@ -77,18 +77,20 @@ class Game:
                     # If the final position contains enemy piece
                     if not self.board.is_empty_cell(potential_final_pos):
                         if self.board.grid[potential_final_pos[0]][potential_final_pos[1]].player!= player:
+
                             # We need to check if we can make a move in that direction over that piece
                             potential_jump_pos = (coords[0] + potential_final_pos[0] , coords[1] + potential_final_pos[1])
                             if self.board.is_empty_cell(potential_jump_pos):
-                                # Add move to the list of possible moves
-                                if piece.is_king and potential_jump_pos == blocked_pos:
+                                if piece.is_king and potential_final_pos in blocked_pos:
                                     continue
+                                # Add move to the list of possible moves
                                 possible_moves.append((potential_jump_pos))
+                                blocked_pos.append(potential_final_pos)
         if len(possible_moves) > 0:
             list_of_moves = []
             for move in possible_moves:
                 if piece.is_king:
-                    kol = self.get_all_jumps_moves(move, piece, blocked_pos=start_pos)
+                    kol = self.get_all_jumps_moves(move, piece, blocked_pos=blocked_pos)
                 else:
                     kol = self.get_all_jumps_moves(move, piece)
                 if kol == []:
