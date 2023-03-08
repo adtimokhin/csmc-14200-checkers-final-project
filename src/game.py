@@ -62,6 +62,9 @@ class Game:
         for coords in possible_pieces_moves:
                 potential_final_pos = (coords[0] + intial_piece_pos[0], coords[1] + intial_piece_pos[1])
                 if self.board.is_on_grid(potential_final_pos):
+                    if  piece.is_king:
+                        while self.board.is_empty_cell(potential_final_pos):
+                            potential_final_pos = (coords[0] + potential_final_pos[0], coords[1] + potential_final_pos[1])
                     # If the final position contains enemy piece
                     if not self.board.is_empty_cell(potential_final_pos):
                         if self.board.grid[potential_final_pos[0]][potential_final_pos[1]].player!= player:
@@ -70,7 +73,7 @@ class Game:
                             if self.board.is_empty_cell(potential_jump_pos):
                                 # Add move to the list of possible moves
                                 possible_moves.append((potential_jump_pos))
-
+                        
         if len(possible_moves) > 0:
             list_of_moves = []
             for move in possible_moves:
@@ -80,12 +83,6 @@ class Game:
             return list_of_moves
 
         return possible_moves
-
-
-
-
-
-
 
     def get_possible_moves(self, player):
         """
