@@ -1,5 +1,5 @@
-from board import Board
-from game_piece import GamePiece
+from src.board import Board
+from src.game_piece import GamePiece
 class Game:
     """
     Public attributes of this class:
@@ -30,7 +30,21 @@ class Game:
             either list[(int,int)] which is a list of tuples of coordinates, representing moves,
             or None
         """
-        raise NotImplementedError
+        player = piece.player
+        direction = -1 if (self.players.index(player) % 2 == 0) else 1
+        current_position = piece.position
+        possible_move = []
+
+        if self.board.is_empty_cell((current_position[0] + direction, current_position[1] + 1)):
+            possible_move.append((piece, (current_position[0] + direction, current_position[1] + 1)))
+        if self.board.is_empty_cell((current_position[0] + direction, current_position[1] - 1)):
+            possible_move.append((piece, (current_position[0] + direction, current_position[1] - 1)))
+        if piece.is_king:
+            if self.board.is_empty_cell((current_position[0] - direction, current_position[1] + 1)):
+                possible_move.append((piece, (current_position[0] + direction, current_position[1] + 1)))
+            if self.board.is_empty_cell((current_position[0] + direction, current_position[1] - 1)):
+                possible_move.append((piece, (current_position[0] - direction, current_position[1] - 1)))
+        return possible_move
 
     def get_possible_jumps_for_piece(self, piece):
         """
@@ -57,40 +71,28 @@ class Game:
             moves_formatted.append([piece, move])
         return moves_formatted
             
-    def get_all_jumps_moves (self, start_pos, piece, blocked_pos=("a","a")):
+    def get_all_jumps_moves (self, start_pos, piece):
         player = piece.player
         direction = -1 if (self.players.index(player) % 2 == 0) else 1
-        if piece.is_king:
-            possible_pieces_moves = ((1, 1) , (1, -1), (-1, 1), (-1, -1))
-        else:
-            possible_pieces_moves = ((-1 * direction, -1 * direction), (-1 * direction, 1 * direction))
+        possible_pieces_moves = ((-1 * direction, -1 * direction), (-1 * direction, 1 * direction))
 
         possible_moves = []
         for coords in possible_pieces_moves:
                 potential_final_pos = (coords[0] + start_pos[0], coords[1] + start_pos[1])
-
-                if piece.is_king:
-                    while self.board.is_empty_cell(potential_final_pos):
-                        potential_final_pos = (coords[0] + potential_final_pos[0], coords[1] + potential_final_pos[1])
-
                 if self.board.is_on_grid(potential_final_pos):
                     # If the final position contains enemy piece
                     if not self.board.is_empty_cell(potential_final_pos):
-                        if self.board.grid[potential_final_pos[0]][potential_final_pos[1]].player!= player:
+                        if self.board.grid[potential_final_pos[0]][potential_final_pos[1]].player != player:
                             # We need to check if we can make a move in that direction over that piece
                             potential_jump_pos = (coords[0] + potential_final_pos[0] , coords[1] + potential_final_pos[1])
                             if self.board.is_empty_cell(potential_jump_pos):
                                 # Add move to the list of possible moves
-                                if piece.is_king and potential_jump_pos == blocked_pos:
-                                    continue
                                 possible_moves.append((potential_jump_pos))
+                        
         if len(possible_moves) > 0:
             list_of_moves = []
             for move in possible_moves:
-                if piece.is_king:
-                    kol = self.get_all_jumps_moves(move, piece, blocked_pos=start_pos)
-                else:
-                    kol = self.get_all_jumps_moves(move, piece)
+                kol = self.get_all_jumps_moves(move, piece)
                 if kol == []:
                     list_of_moves.append([move,[]])
                 for item in kol:
@@ -105,17 +107,10 @@ class Game:
         :param player
             Player for whom possible moves are found
         :returns
-            list[[piece, [int, int]]] - list of tuples that show a piece and a possible move coordinate
+            list[(piece, [(int, int)])] - list of tuples that show a piece and a possible move coordinate
             if jumps are possible returns only jump-moves
         """
-        player_pieces = self.pieces_dict.get(player, [])
-        all_possible_moves = []
-
-        for piece in player_pieces:
-            possible_moves = self.get_possible_moves_for_piece(piece)
-            if possible_moves != []:
-                all_possible_moves.extend(possible_moves)
-        return all_possible_moves
+        raise NotImplementedError
 
     def get_all_jumps(self, player):
         """
@@ -127,14 +122,10 @@ class Game:
             or None if no 'jump-moves' are found
 
         """
-        player_pieces = self.pieces_dict.get(player, [])
-        all_possible_moves = []
-        
-        for piece in player_pieces:
-            possible_moves = self.get_possible_jumps_for_piece(piece)
-            if possible_moves != []:
-                all_possible_moves.extend(possible_moves)
-        return all_possible_moves
+        list_to_return = []
+        for piece in self.pieces_dict[player]:
+            list_to_return += self.get_possible_jumps_for_piece(piece)
+        return list_to_return
     
     def __populate_board(self):
 
