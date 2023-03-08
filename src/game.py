@@ -1,5 +1,5 @@
-from src.board import Board
-from src.game_piece import GamePiece
+from board import Board
+from game_piece import GamePiece
 class Game:
     """
     Public attributes of this class:
@@ -70,15 +70,23 @@ class Game:
         for move in sorted_moves:
             moves_formatted.append([piece, move])
         return moves_formatted
+
             
     def get_all_jumps_moves (self, start_pos, piece, blocked_pos=[]):
         player = piece.player
         direction = -1 if (self.players.index(player) % 2 == 0) else 1
-        possible_pieces_moves = ((-1 * direction, -1 * direction), (-1 * direction, 1 * direction))
+        if piece.is_king:
+            possible_pieces_moves = ((1, 1) , (1, -1), (-1, 1), (-1, -1))
+        else:
+            possible_pieces_moves = ((-1 * direction, -1 * direction), (-1 * direction, 1 * direction))
 
         possible_moves = []
         for coords in possible_pieces_moves:
                 potential_final_pos = (coords[0] + start_pos[0], coords[1] + start_pos[1])
+                if piece.is_king:
+                    while self.board.is_empty_cell(potential_final_pos):
+                        potential_final_pos = (coords[0] + potential_final_pos[0], coords[1] + potential_final_pos[1])
+
                 if self.board.is_on_grid(potential_final_pos):
                     # If the final position contains enemy piece
                     if not self.board.is_empty_cell(potential_final_pos):
@@ -116,7 +124,7 @@ class Game:
             list[(piece, [(int, int)])] - list of tuples that show a piece and a possible move coordinate
             if jumps are possible returns only jump-moves
         """
-       list_to_return = []
+        list_to_return = []
         for piece in self.pieces_dict[player]:
             list_to_return += self.get_possible_moves_for_piece(piece)
         return list_to_return
