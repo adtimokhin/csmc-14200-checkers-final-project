@@ -1,5 +1,5 @@
-from board import Board
-from game_piece import GamePiece
+from src.board import Board
+from src.game_piece import GamePiece
 class Game:
     """
     Public attributes of this class:
@@ -129,7 +129,9 @@ class Game:
                 self.pieces_dict[self.players[0]].append(first_piece)
                 self.pieces_dict[self.players[1]].append(second_piece)
 
-    def make_move(self, initial_pos: tuple, final_pos: tuple):
+
+
+    def make_move(self, move):
         """
         Moves a Game_Piece from initial position to final position on the grid
         removes a Piece from the board if the 'jump-move' was performed
@@ -140,4 +142,9 @@ class Game:
         :returns
             None
         """
-        pass
+        piece = move[0]
+        list_of_movements = move[1]
+        for transposition in list_of_movements:
+            self.board.move_piece(piece.position, transposition)
+
+

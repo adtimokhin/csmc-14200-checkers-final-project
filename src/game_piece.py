@@ -16,9 +16,9 @@ class GamePiece:
         self.is_king = False
 
     def __repr__(self):
-        return f"GP-{self.player}"
+        return f"{self.player}"
 
-    def tranform(self):
+    def transform(self):
         """
         Transforms a game piece into a king 
         :param None
@@ -26,4 +26,4 @@ class GamePiece:
         :returns
             None
         """
-        self.is_king = not self.is_king
+        self.is_king = True

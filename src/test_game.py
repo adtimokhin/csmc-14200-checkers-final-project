@@ -1,4 +1,4 @@
-from game import Game
+from src.game import Game
 from player import Player
 from game_piece import GamePiece
 from board import Board
