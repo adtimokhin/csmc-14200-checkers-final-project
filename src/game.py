@@ -1,5 +1,5 @@
-from board import Board
-from game_piece import GamePiece
+from src.board import Board
+from src.game_piece import GamePiece
 class Game:
     """
     Public attributes of this class:
@@ -31,7 +31,7 @@ class Game:
             or None
         """
         player = piece.player
-        direction = -1 if (self.players.index(player) % 2 == 0) else 1
+        direction = 1 if (self.players.index(player) % 2 == 0) else -1
         current_position = piece.position
         possible_move = []
 
@@ -108,7 +108,7 @@ class Game:
                 else:
                     kol = self.get_all_jumps_moves(move, piece)
                 if kol == []:
-                    list_of_moves.append([move,[]])
+                    list_of_moves.append([move, []])
                 for item in kol:
                     list_of_moves.append([move, item])
             return list_of_moves
@@ -124,7 +124,9 @@ class Game:
             list[(piece, [(int, int)])] - list of tuples that show a piece and a possible move coordinate
             if jumps are possible returns only jump-moves
         """
-        list_to_return = []
+        list_to_return = self.get_all_jumps(player)
+        if list_to_return != []:
+            return list_to_return
         for piece in self.pieces_dict[player]:
             list_to_return += self.get_possible_moves_for_piece(piece)
         return list_to_return
@@ -181,6 +183,6 @@ class Game:
         piece = move[0]
         list_of_movements = move[1]
         for transposition in list_of_movements:
-            self.board.move_piece(piece.position, transposition)
+            self.board.move_piece(piece.position, transposition, self)
 
 
