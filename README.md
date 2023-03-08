@@ -115,7 +115,7 @@ in the board class, meaning our board is not general, it is checkers-specific, a
 * Fixed a bug where a bot was asked if they want to offer/accept a draw. Bots do not give up!
 * Added a winner screen after the game has finished
 * Made code for the function that prints the board into the terminal more readable
-* Added unit tests for TUIGame, located in [test_tui.py](https://github.com/uchicago-cmsc14200-win-2023/project-adtimokhi-nikitarodi-rahulgarg-pborisov/blob/main/src/test_tui.py)
+* Added unit tests for TUIGame, located in test_tui.py
 * Made it so that player must choose a jump move if one is available.
 
 
