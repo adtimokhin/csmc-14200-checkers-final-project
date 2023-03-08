@@ -157,7 +157,6 @@ class GamePiece:
         """
         raise NotImplementedError
 
-
 class Player:
 
     """
