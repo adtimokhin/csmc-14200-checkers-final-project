@@ -21,15 +21,32 @@ class Game:
         # Setting the board with pieces
         self.__populate_board()
 
-    def get_possible_jumps(self, piece):
+    def get_possible_moves_for_piece(self, piece):
         """
-        finds all the possible jumps of a given piece on the board
+        finds possible moves for a given piece
         :param piece
-            piece for which we need to find jumps
+            the specific game piece for which the moves are found
         :returns
-            list[(int, int)] - a list of tuples which represent the coordinates of jumps, or None
+            either list[(int,int)] which is a list of tuples of coordinates, representing moves,
+            or None
         """
         raise NotImplementedError
+
+    def get_possible_jumps_for_piece(self, piece):
+        """
+        finds possible jumps for a given piece
+        :param piece
+            the specific game piece for which the jumps are found
+        :returns
+            either list[(int,int)] which is a list of tuples of coordinates, representing jumps,
+            or None
+        """
+        raise NotImplementedError
+
+
+
+
+
 
     def get_possible_moves(self, player):
         """
@@ -39,17 +56,6 @@ class Game:
         :returns
             list[(piece, (int, int))] - list of tuples that show a piece and a possible move coordinate
             if jumps are possible returns only jump-moves
-        """
-        raise NotImplementedError
-
-    def get_possible_moves_for_piece(self, piece):
-        """
-        finds possible moves for a given piece
-        :param piece
-            the specific game piece for which the moves are found
-        :returns
-            either list[(int,int)] which is a list of tuples of coordinates, representing moves,
-            or None
         """
         raise NotImplementedError
 
