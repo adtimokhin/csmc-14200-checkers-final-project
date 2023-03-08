@@ -357,6 +357,7 @@ def play_checkers(board: Board, players):
 
 
 def cmd(size, player1, player2):
+
     board = Board(size)
 
     player1 = GUIPlayer(1, player1, board, "Black")
