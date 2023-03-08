@@ -75,7 +75,104 @@ class TUI:
             self.console.print(separator_line)
             row_number += 1
 
-            
+    def get_int_input(self, prompt, range=(-1, -1)):
+        """
+        This method will repeatedly ask user to select a user to enter an
+        integer until a valid value is given.
+        Inputs:
+            prompt (str) - a message that explains what the input is for
+            range (tuple(int, int)) - an inclusive range of accepted values, as
+                                    follows: (min_val, max_val). If the tuple is
+                                    given as (-1,-1) then the range is not
+                                    applicable.
+        Output:
+            (int) - a value of type integer and in a certain range,
+                    if was provided.
+        """
+        result = -1
+        valid_input = False
+        while not valid_input:
+            self.console.print(f"[on red]{prompt}[/on red]")
+            result = input()
+            try:
+                result = int(result)
+                if range != (-1, -1):
+                    if range[0] <= result <= range[1]:
+                        valid_input = True
+                    else:
+                        self.console.print(f"The value should be in range from"+
+                                        f"{range[0]} to {range[1]} inclusively")
+                else:
+                    valid_input = True
+            except ValueError:
+                self.console.print("This is not an integer!")
+        return result
+
+    def get_bool_input(self, prompt, true_ans=["y"], false_ans=["n"]):
+        """
+        This method will repeatedly ask user to select a user to enter an string
+        until a valid value is given.
+        Inputs:
+            prompt (str) - a message that explains what the input is for
+            true_ans (list[str]) - a list of inputs by user that would be
+                            considered to be equivalent to an answer of True
+            false_ans (list[str]) - a list of inputs by user that would be
+                            considered to be equivalent to an answer of False
+        Output:
+            (bool) - a value of type integer and in a certain range,
+                    if was provided.
+        """
+
+        result = False
+        valid_answer = False
+        while not valid_answer:
+            self.console.print(f"[on red]{prompt}[/on red]")
+            self.console.print(f"to answer [green]'yes'[/green] type one of"
+                               f" these values: {true_ans}")
+            self.console.print(f"to answer [red]'no'[/red] type one of"
+                               f" these values: {false_ans}")
+            user_input = input().lower()
+            if user_input in true_ans:
+                result = True
+                valid_answer = True
+            elif user_input in false_ans:
+                result = False
+                valid_answer = True
+            else:
+                self.console.print("This is an invalid answer")
+
+        return result
+
+    def print_winner_screen(self, winner=None) -> None:
+        """
+        Prints information which player won.
+
+        Input:
+            player (Player) - player that has won the game. 
+                            If player is passed as None, then the game was 
+                            terminated with a draw
+        """
+        self.console.print("-"*10 + " [yellow]THE GAME IS OVER[/yellow] " + "-"*10)
+        if winner is None:
+            self.console.print("[green]DRAW![/green] There is no winner")
+        else:
+            self.console.print(f"Winner: [on green]{winner.name}[/on green]")
+        self.console.print("-"*10)    
+
+         
+def is_bot(player) -> bool:
+    """
+    This method checks if the user passed in parameters is a Bot.
+
+    Input:
+        player (Player) - player or an object that inherits from Player class
+
+    Output:
+        True - if the player is of class that inherits Player
+        False - if the player is of class Player and not its children.
+    """
+    return type(player) is RandomBot or type(player) is CheckersBot
+   
 
 
 class TUIGame:
@@ -91,9 +188,75 @@ class TUIGame:
         using the board set as a class parameters
         """
 
+        turn = 0
+        player_count = len(self.game.players)
+        is_draw = False
+
+        current_player = self.game.players[0]
+        next_player = self.game.players[1]
+
+        # Flag that checks if the players should have a offer_draw option
+        should_offer_draw = not(is_bot(current_player) or is_bot(next_player))
+
         # Printing board
         self.tui.print_board(self.game)
 
+        # Game loop
+        while not (self.check_player_lost(current_player) or is_draw):
+            # A turns starts with asking if users want to declare a draw
+            if should_offer_draw:
+                is_draw = self.is_draw(current_player,
+                                         next_player)
+                if is_draw:
+                    # Then the game finishes with a draw
+                    continue   
+                # When the game is over, a description of how the game ended should 
+             
+            # Updating some pointers
+            turn += 1
+            current_player = self.players[turn % player_count]
+            next_player = self.players[(turn + 1) % player_count]
+
+        # When the game is over, a description of how the game ended should 
+        # be provided
+        winner = None if is_draw else self.game.players[(turn + 1) % player_count]
+        self.tui.print_winner_screen(winner)         
+
+
+    def check_player_lost(self, current_player):
+        """
+        Checks if the player lost the game or not
+        Input:
+            current_player (Player) - a player whose turn it is
+        Output:
+            True - if the player has lost the game
+            False - if the player has not lost the game
+        """
+        valid_moves = self.game.get_possible_moves(current_player)
+        return valid_moves == []
+
+    def is_draw(self, current_player, next_player):
+        """
+        Checks if draw is offered and accepted. Prompts users to
+        enter their answer to see if the game should end with a draw.
+        Input:
+            current_player (Player) - Player that can offer a draw as 
+                                      it is their turn.
+            next_player (Player) - Player to whom offer can be offered, and they
+                                    may accept it or not.
+        Output:
+            True - the game should be terminated with a draw
+            False - the game continues
+        """
+        if self.tui.get_bool_input(prompt=f"Do you, {current_player.name}," + \
+                                f" want to offer a draw to your opponent?",
+                                true_ans=["y", "yes"], false_ans=["n", "no"]):
+            return self.tui.get_bool_input(
+                prompt=f"Do you, {next_player.name}, want to accept a draw" + \
+                       f" offered by your opponent?",
+                true_ans=["y", "yes"], false_ans=["n", "no"])
+
+        return False
 
 # @click.command(name="checkers-tui")
 def cmd():
