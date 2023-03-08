@@ -155,12 +155,14 @@ class Game:
                 # Placing game pieces to the grid of the board
                 first_piece = GamePiece((row_num, col_num), self.players[0])
                 self.board.place_piece(first_piece)
+                # Putting the pieces in the pieces_dict:
+                self.pieces_dict[self.players[0]].append(first_piece)
 
+            start_pos = 1 if start_pos == 0 else 0
+            for col_num in range(start_pos,self.width, 2):
                 second_piece = GamePiece(( len(self.board.grid) - row_num - 1, col_num), self.players[1])
                 self.board.place_piece(second_piece)
 
-                # Putting the pieces in the pieces_dict:
-                self.pieces_dict[self.players[0]].append(first_piece)
                 self.pieces_dict[self.players[1]].append(second_piece)
 
 
