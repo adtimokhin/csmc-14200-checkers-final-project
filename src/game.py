@@ -41,7 +41,46 @@ class Game:
             either list[(int,int)] which is a list of tuples of coordinates, representing jumps,
             or None
         """
-        raise NotImplementedError
+        unsorted_moves = self.get_all_jumps_moves(piece.position, piece)
+
+        sorted_moves = []
+        for unsorted_move in unsorted_moves:
+            new_move = []
+            while unsorted_move != []:
+                new_move.append(unsorted_move[0])
+                unsorted_move = unsorted_move[1]
+            if new_move != []:
+                sorted_moves.append(new_move)
+        return sorted_moves
+            
+    def get_all_jumps_moves (self, start_pos, piece):
+        player = piece.player
+        direction = -1 if (self.players.index(player) % 2 ==0) else 1
+        possible_pieces_moves = ((-1 * direction, -1 * direction), (-1 * direction, 1 * direction))
+
+        possible_moves = []
+        for coords in possible_pieces_moves:
+                potential_final_pos = (coords[0] + intial_piece_pos[0], coords[1] + intial_piece_pos[1])
+                if self.board.is_on_grid(potential_final_pos):
+                    # If the final position contains enemy piece
+                    if not self.board.is_empty_cell(potential_final_pos):
+                        if self.board.grid[potential_final_pos[0]][potential_final_pos[1]].player!= player:
+                            # We need to check if we can make a move in that direction over that piece
+                            potential_jump_pos = (coords[0] + potential_final_pos[0] , coords[1] + potential_final_pos[1])
+                            if self.board.is_empty_cell(potential_jump_pos):
+                                # Add move to the list of possible moves
+                                possible_moves.append((potential_jump_pos))
+
+        if len(possible_moves) > 0:
+            list_of_moves = []
+            for move in possible_moves:
+                kol = self.get_all_jumps_moves(move, piece)
+                for item in kol:
+                    list_of_moves.append([move, item])
+            return list_of_moves
+
+        return possible_moves
+
 
 
 
@@ -89,8 +128,6 @@ class Game:
                 # Putting the pieces in the pieces_dict:
                 self.pieces_dict[self.players[0]].append(first_piece)
                 self.pieces_dict[self.players[1]].append(second_piece)
-
-
 
     def make_move(self, initial_pos: tuple, final_pos: tuple):
         """

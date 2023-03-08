@@ -48,6 +48,51 @@ class Board:
         
         self.grid[piece.position[0]][piece.position[1]] = piece
 
+    def is_on_grid(self, position):
+        """
+        Checks if the coordinates given are correspondive to an unoccupied cell on the grid
+        If the coordinates are out of bound, then False is returned.
+
+        Input:
+            pos - (int, int) is a position coordinates of the cell. Given as (row, col)
+        
+        Output:
+            True - if the cell is in range of board
+            False - otherwise
+        """
+        row_pos = position[0]
+        col_pos = position[1]
+
+        # Checking if the cell is out of bound
+        if not (0 <= row_pos < len(self.grid)):
+            return False
+        if not (0 <= col_pos < len(self.grid[0])):
+            return False
+
+        return True
+
+    def is_empty_cell(self, pos):
+        """
+        Checks if the coordinates given are correspondive to an unoccupied cell on the grid
+        If the coordinates are out of bound, then False is returned.
+
+        Input:
+            pos - (int, int) is a position coordinates of the cell. Given as (row, col)
+        
+        Output:
+            True - if the cell is in range of board and also is not occupied
+            False - otherwise
+        """
+
+        if not self.is_on_grid(pos):
+            return False
+
+        row_pos = pos[0]
+        col_pos = pos[1]
+
+        # Checking if the cell is occupied or not
+        return self.grid[row_pos][col_pos] is None
+
      def remove_piece(self, piece):
         """
         Removes a piece from the board
