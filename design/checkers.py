@@ -297,7 +297,6 @@ class CheckersBot(Player):
         """
         raise NotImplementedError
 
-
 class RandomBot(Player):
     """
     A bot that is able to make random moves, made for the tests
@@ -478,42 +477,25 @@ class TUIGame:
 
 
 # GUI
-class GUIPlayer(Player):
-    """
-    Simple class to store information about a GUI player
-    Attributes:
-        player: Player
-        board: Board
-    """
-
-def is_players_piece(surface, coordinates, player_pieces_color):
-    """
-    Checks if selected piece belongs to a given player
-
-    Input:
-        surface (Surface)
-        coordinates () coordinates clicked
-        player_pieces_color (String) color of player
-
-    Output:
-        bool - True is piece selected belongs to player, False otherwise.
-    """
-
+def is_players_piece(surface, coordinates, player_color):
+    '''
+    Checks if the selected location stores the piece of a given player
+    '''
     raise NotImplementedError
 
-def get_position(coordinates):
-    """
-    Gets position of the piece through game coordinates
-
-    Input:
-        coordinates - coordinates clicked
-
-    Output:
-        (int, int) - tuple of location of the gamepiece
-    """
+def get_piece(board, coordinates):
+    '''
+    Finds and returns the piece (GamePiece) on the board given its coordinates
+    '''
     raise NotImplementedError
 
-def draw_board(board: Board, surface, player_color, game_piece = None) -> None:
+def get_position(coordinates, game):
+    '''
+    Converts pixel coordinates into board position (row, column)
+    '''
+    raise NotImplementedError
+
+def draw_board(game, surface, game_piece = None) -> None:
     """ 
     Draws the current state of the board in the window
     Args:
@@ -523,61 +505,36 @@ def draw_board(board: Board, surface, player_color, game_piece = None) -> None:
     """
     raise NotImplementedError
 
-def selected_piece(game_piece: GamePiece):
-    """
-    Suggests what cells a given piece can be moved to.
+def play_checkers(game):
+    '''
+    Plays a game of Checkers on a Pygame window
+    Args:
+        board: The board to play on
+        players: A list of players (GUIPlayer objects)
+    Returns: None
+    '''
+    raise NotImplementedError
 
+def is_piece_moved(game,piece_to_move, selected_final_position):
+    """
+    Checks if the piece is moved or not
     Input:
-        game_piece (GamePiece)
-    
+        piece_to_move (GamePiece) - the piece to move
+        selected_final_position (tuple) - the final position of the piece
     Output:
-        tuple(int,int) - positions to move the piece.
+        True - if the piece is moved to a valid location
+        False - if the piece is not moved to a valid location
     """
     raise NotImplementedError
 
-def move_piece(init_pos, final_pos):
+def check_player_lost(game, current_player):
     """
-    Moves piece on the board from init_pos to final_pos.
-
+    Checks if the player lost the game or not
     Input:
-        init_pos - (int,int) initial position
-        final_pos - (int, int) final position
-    """
-    raise NotImplementedError
-
-def remove_piece(position):
-    """
-    Removes piece from the given position
-
-    Input:
-        position (int,int) - position to remove a piece from
-    """
-    raise NotImplementedError
-
-def change_player(players):
-    """
-    Changes a player that makes a move
-
-    Input:
-        players (list[Player]) - players that play the game
-    """
-    raise NotImplementedError
-
-def play_checkers(board: Board):
-    """
-    Plays the game of checkers on a board provided.
-
-    Input:
-        board (Board) - board to play the game on.
-    """
-    raise NotImplementedError
-
-def is_end():
-    """
-    Checks if the game is over.
-
+        current_player (Player) - a player whose turn it is
     Output:
-        True - if the game is over.
-        False - otherwise.
+        True - if the player has lost the game
+        False - if the player has not lost the game
     """
     raise NotImplementedError
+ 

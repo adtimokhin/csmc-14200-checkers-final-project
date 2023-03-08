@@ -31,6 +31,7 @@ from board import Board
 from game_piece import GamePiece
 from bot import CheckersBot, RandomBot
 from game import Game
+from tui import is_bot
 
 WIDTH = 600
 HEIGHT = 600
@@ -188,30 +189,38 @@ def play_checkers(game):
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+        if not is_bot(current_player):
+            if event.type == pygame.MOUSEMOTION:
+                    if is_players_piece(SCREEN, event.pos, current_player.color): 
+                        board_color = get_position(event.pos, game)
+                        for piece in game.pieces_dict[current_player]:
+                            if piece.position == board_color:
+                                selected = piece
+                                break
 
-        if event.type == pygame.MOUSEMOTION:
-                if is_players_piece(SCREEN, event.pos, current_player.color): 
-                    board_color = get_position(event.pos, game)
-                    for piece in game.pieces_dict[current_player]:
-                        if piece.position == board_color:
-                            selected = piece
-                            break
+                        draw_board(game, SCREEN, game_piece=selected)
+                        pygame.display.update()
 
-                    draw_board(game, SCREEN, game_piece=selected)
-                    pygame.display.update()
-
-        if event.type == pygame.MOUSEBUTTONDOWN:
-                    board_coor = get_position(event.pos,game)
-                    if is_piece_moved(game, selected, board_coor):
-                        temp = current_player
-                        current_player = next_player
-                        next_player = temp
-                        draw_board(game, SCREEN)
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                        should_be_jump = game.get_all_jumps(current_player) != []
+                        board_coor = get_position(event.pos,game)
+                        if is_piece_moved(game, selected, board_coor, should_be_jump):
+                            temp = current_player
+                            current_player = next_player
+                            next_player = temp
+                            draw_board(game, SCREEN)
+        else:
+            move = current_player.choose_move(game.board, game.get_possible_moves(current_player))
+            game.make_move(move)
+            temp = current_player
+            current_player = next_player
+            next_player = temp
+            draw_board(game, SCREEN)
    
     print(f"{next_player} WON!")
     pygame.quit()
 
-def is_piece_moved(game,piece_to_move, selected_final_position):
+def is_piece_moved(game,piece_to_move, selected_final_position, should_be_jump):
     """
     Checks if the piece is moved or not
     Input:
@@ -223,6 +232,8 @@ def is_piece_moved(game,piece_to_move, selected_final_position):
     """
     all_possible_moves = game.get_possible_jumps_for_piece(piece_to_move)
     if all_possible_moves == []:
+        if should_be_jump:
+            return False
         all_possible_moves = game.get_possible_moves_for_piece(piece_to_move)
     final_positions = list(move[1][-1] for move in all_possible_moves)
 
@@ -237,7 +248,7 @@ def is_piece_moved(game,piece_to_move, selected_final_position):
     game.make_move(all_possible_moves[i])
     return True
 
-def check_player_lost(game, current_player: Player) -> bool:
+def check_player_lost(game, current_player):
     """
     Checks if the player lost the game or not
     Input:
