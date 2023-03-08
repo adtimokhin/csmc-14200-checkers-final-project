@@ -1,4 +1,4 @@
-from src.board import Board
+from board import Board
 from game_piece import GamePiece
 class Game:
     """
@@ -7,7 +7,7 @@ class Game:
         players: list[Player]
     """
 
-    def __init__(self,   players, number_populated_rows, width=8):
+    def __init__(self, players, number_populated_rows, width=8):
         self.players = players
         self.number_populated_rows = number_populated_rows
         self.width = width
