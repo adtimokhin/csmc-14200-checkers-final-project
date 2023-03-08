@@ -40,10 +40,10 @@ class CheckersBot(Player):
 
             if len(king_moves) != 0:
                 # if we can king with the biggest jump, we do that
-                return king_moves[randint(0, len(king_moves))]
+                return king_moves[randint(0, len(king_moves)-1)]
             else:
                 # if we can't king, then we perform the longest jump-move
-                return valid_moves[randint(0, len(valid_moves))]
+                return valid_moves[randint(0, len(valid_moves)-1)]
 
         else:
             # this logical block is responsible for choosing the best non-jump move
@@ -66,7 +66,7 @@ class CheckersBot(Player):
 
             # checks if we can make a move without using two defensive pieces
             if len(non_defensive_moves) == 0:
-                return valid_moves[randint(0, len(valid_moves))]
+                return valid_moves[randint(0, len(valid_moves)-1)]
             else:
                 return non_defensive_moves[randint(0, len(non_defensive_moves)-1)]
 
@@ -220,23 +220,18 @@ def main():
         player_2 = RandomBot("Player 2", "black")
         players = [player_1, player_2]
         game = Game(players, 2, 8)
-        test_board = Board(10, 10)
-        game.board = test_board
-        piece_1 = GamePiece((0, 0), player_1)
-        piece_2 = GamePiece((1, 1), player_2)
-        piece_3 = GamePiece((3, 3), player_2)
-        piece_4 = GamePiece((1, 3), player_2)
-        piece_5 = GamePiece((3, 1), player_2)
-        game.pieces_dict[player_1] = [piece_1]
-        game.pieces_dict[player_2] = [piece_2, piece_3, piece_4, piece_5]
-        game.board.place_piece(piece_1)
-        game.board.place_piece(piece_2)
-        game.board.place_piece(piece_3)
-        game.board.place_piece(piece_4)
-        game.board.place_piece(piece_5)
-        moves = game.get_possible_moves(player_1)
-        print(player_1.choose_move(game.board, moves))
-        print(game.board.grid)
+        while True:
+            moves = game.get_possible_moves(game.players[0])
+            if len(moves) == 0:
+                break
+            the_move = player_1.choose_move(game.board, moves)
+            game.make_move(the_move)
+            moves = game.get_possible_moves(game.players[1])
+            if len(moves) == 0:
+                print('random bot lost')
+                break
+            the_move = player_2.choose_move(game.board, moves)
+            game.make_move(the_move)
 
 if __name__ == "__main__":
     main()
