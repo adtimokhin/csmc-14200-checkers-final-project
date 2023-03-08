@@ -300,7 +300,10 @@ class TUIGame:
                 # When the game is over, a description of how the game ended should 
              
             # Asking for players move.
-            move = self.tui.get_player_move(current_player, self.game)
+            if is_bot(current_player):
+                move = current_player.choose_move(self.game.board, self.game.get_possible_moves(current_player))
+            else:
+                move = self.tui.get_player_move(current_player, self.game)
 
             # Performing the move
             self.game.make_move(move)
@@ -351,14 +354,32 @@ class TUIGame:
 
         return False
 
-# @click.command(name="checkers-tui")
-def cmd():
-    player_1 = Player("Player 1", "#5442f5")
-    player_2 = Player("Player 2", "#42f2f5")
-    players = [player_1, player_2]
+@click.command(name="checkers-tui")
+@click.option('--player-1-type', default="Player One")
+@click.option('--player-2-type', default="Player Two")
+@click.option('--width', default=8)
+@click.option('--rows-with-pieces', default=2)
+def cmd(player_1_type, player_2_type, width, rows_with_pieces):
 
-    game = Game(players, 2,6)
+    if player_1_type == "random-bot":
+        player_1 = RandomBot("random-bot-1","#5442f5")
+    elif player_1_type == "smart-bot":
+        player_1 = CheckersBot("smart-bot-1","#5442f5")
+    else:
+        player_1 = Player(player_1_type, "#5442f5")
+
+    if player_2_type == "random-bot":
+        player_2 = RandomBot("random-bot-2","#42f2f5")
+    elif player_2_type == "smart-bot":
+        player_2 = CheckersBot("smart-bot-2","#42f2f5")
+    else:
+        player_2 = Player(player_2_type, "#42f2f5")
+    
+    players = [player_1, player_2]
+    game = Game(players, rows_with_pieces, width)
+
     tui_game = TUIGame(game)
+
     tui_game.play_game()
 
 

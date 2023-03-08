@@ -1,8 +1,9 @@
 from random import randint
-from src.player import Player
-from src.board import Board
-from src.game import Game
-from src.game_piece import GamePiece
+from player import Player
+from board import Board
+from game import Game
+from game_piece import GamePiece
+
 from math import inf
 # https://hobbylark.com/board-games/Checkers-Strategy-Tactics-How-To-Win - strategy source
 
