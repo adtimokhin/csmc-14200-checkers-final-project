@@ -1,4 +1,6 @@
 # Checkers
+![Static Badge](https://img.shields.io/badge/License-MIT-blue)
+![Static Badge](https://img.shields.io/badge/project_status-completed-brightgreen)
 
 This repository contains a design and implementation
 for Checkers game.
